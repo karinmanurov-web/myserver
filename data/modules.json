@@ -1,0 +1,83 @@
+[
+  {
+    "id": "character-animator",
+    "name": "Character Animator",
+    "category": "motion",
+    "icon": "🦊",
+    "description": "Bring illustrated characters to life with reusable animation scripts, expressions and little stories.",
+    "status": "PROTOTYPE",
+    "path": null
+  },
+  {
+    "id": "kinetic-typography",
+    "name": "Kinetic Typography",
+    "category": "motion",
+    "icon": "Aa",
+    "description": "Turn words and letters into moving compositions, titles and animated visual poems.",
+    "status": "PLANNED",
+    "path": null
+  },
+  {
+    "id": "motion-sculpture",
+    "name": "Motion Sculpture",
+    "category": "visual",
+    "icon": "✳",
+    "description": "Compose abstract moving forms from geometry, ribbons, particles and procedural rules.",
+    "status": "IDEA",
+    "path": null
+  },
+  {
+    "id": "virtual-car-director",
+    "name": "Virtual Car Director",
+    "category": "director",
+    "icon": "◈",
+    "description": "Build animated automotive storyboards with camera angles, movement, lighting and shot timing.",
+    "status": "PLANNED",
+    "path": null
+  },
+  {
+    "id": "shot-composer",
+    "name": "Shot Composer",
+    "category": "director",
+    "icon": "▧",
+    "description": "Arrange frames into a sequence and preview the rhythm of a future film or reel.",
+    "status": "IDEA",
+    "path": null
+  },
+  {
+    "id": "room-theater",
+    "name": "Room Theater",
+    "category": "world",
+    "icon": "⌂",
+    "description": "Create atmospheric scenes where rooms, objects, light and little details change over time.",
+    "status": "PLANNED",
+    "path": null
+  },
+  {
+    "id": "generative-art",
+    "name": "Generative Art Studio",
+    "category": "visual",
+    "icon": "✺",
+    "description": "Create animated visual experiments from palettes, shapes, particles and procedural instructions.",
+    "status": "IDEA",
+    "path": null
+  },
+  {
+    "id": "product-stage",
+    "name": "Product Stage",
+    "category": "visual",
+    "icon": "◇",
+    "description": "Design miniature virtual photo sets with objects, backdrops, lighting and camera movement.",
+    "status": "IDEA",
+    "path": null
+  },
+  {
+    "id": "tiny-world",
+    "name": "Tiny World Builder",
+    "category": "world",
+    "icon": "▦",
+    "description": "Build small living places with objects, weather, time cycles and scripted events.",
+    "status": "IDEA",
+    "path": null
+  }
+]
