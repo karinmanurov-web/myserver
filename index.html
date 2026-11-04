@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f0e8">
+  <meta name="description" content="The Creative Lab — personal collection of creative digital engines and experiments.">
+  <title>The Creative Lab</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./main.css">
+  <script src="./main.js" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="The Creative Lab — home">
+        <span class="brand-mark">✳</span>
+        <span>THE CREATIVE LAB</span>
+      </a>
+      <div class="topbar-right">
+        <span class="live-dot"></span>
+        <span class="topbar-caption">PERSONAL DIGITAL WORKSHOP</span>
+        <button class="icon-button" id="aboutButton" type="button" aria-label="About the lab" title="About the lab">?</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">IMAGINE · SCRIPT · CREATE</p>
+          <h1>A little space<br><em>for big ideas.</em></h1>
+          <p class="hero-description">A personal collection of creative engines, visual experiments and tiny worlds. Built one curious idea at a time.</p>
+          <a class="text-link" href="#apps">EXPLORE THE LAB <span>↘</span></a>
+        </div>
+        <div class="hero-art" aria-label="Abstract illustration of a creative studio">
+          <div class="art-sun"></div>
+          <div class="art-window">
+            <div class="art-window-sky"></div>
+            <div class="art-hill hill-one"></div>
+            <div class="art-hill hill-two"></div>
+          </div>
+          <div class="art-plant plant-one"><i></i><i></i><i></i><b></b></div>
+          <div class="art-plant plant-two"><i></i><i></i><i></i><b></b></div>
+          <div class="art-book book-one"></div><div class="art-book book-two"></div>
+          <div class="art-caption">STUDIO Nº 001<br><small>EST. 2026</small></div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid" aria-label="Daily widgets">
+        <article class="widget clock-widget">
+          <div class="widget-heading"><span class="widget-label">LOCAL TIME</span><span class="widget-symbol">◷</span></div>
+          <div class="clock-time" id="clockTime">--:--</div>
+          <div class="clock-date" id="clockDate">Loading date…</div>
+          <div class="clock-foot"><span class="live-dot"></span> YOUR DEVICE TIME</div>
+        </article>
+
+        <article class="widget weather-widget">
+          <div class="widget-heading"><span class="widget-label">WEATHER OUTSIDE</span><span class="widget-symbol">☼</span></div>
+          <div class="weather-main">
+            <div>
+              <div class="weather-temp" id="weatherTemp">--°</div>
+              <div class="weather-description" id="weatherDescription">Choose a city</div>
+            </div>
+            <div class="weather-icon" id="weatherIcon">☁</div>
+          </div>
+          <div class="weather-location-row">
+            <span id="weatherLocation">Казань</span>
+            <button class="tiny-button" id="changeCityButton" type="button">CHANGE ↗</button>
+          </div>
+          <div class="weather-extra" id="weatherExtra">Feels like — · Wind —</div>
+          <form class="city-form" id="cityForm">
+            <input id="cityInput" type="text" placeholder="Enter a city…" aria-label="Weather city">
+            <button type="submit" aria-label="Search city">↗</button>
+          </form>
+          <p class="widget-note" id="weatherNote">Weather by Open-Meteo</p>
+        </article>
+
+        <article class="widget focus-widget">
+          <div class="widget-heading"><span class="widget-label">FOCUS SESSION</span><span class="widget-symbol">◌</span></div>
+          <div class="focus-time" id="focusTime">25:00</div>
+          <div class="focus-progress"><span id="focusProgress"></span></div>
+          <div class="focus-status" id="focusStatus">A little focus goes a long way.</div>
+          <div class="focus-controls">
+            <button class="button button-dark" id="focusStart" type="button">START</button>
+            <button class="button button-light" id="focusReset" type="button">RESET</button>
+          </div>
+        </article>
+
+        <article class="widget inspiration-widget">
+          <div class="widget-heading"><span class="widget-label">A LITTLE INSPIRATION</span><span class="widget-symbol">✳</span></div>
+          <p class="inspiration-text" id="inspirationText">Make something small, just to see what happens.</p>
+          <button class="text-link small-link" id="newInspiration" type="button">ANOTHER IDEA ↗</button>
+          <div class="inspiration-index">CREATIVE PROMPT / <span id="inspirationNumber">01</span></div>
+        </article>
+
+        <article class="widget notes-widget">
+          <div class="widget-heading"><span class="widget-label">QUICK NOTES</span><span class="widget-symbol">✎</span></div>
+          <textarea id="quickNotes" placeholder="A thought, a fragment, an idea to return to…" aria-label="Quick notes"></textarea>
+          <div class="notes-footer"><span id="notesStatus">Saved in this browser</span><button class="tiny-button" id="clearNotes" type="button">CLEAR</button></div>
+        </article>
+      </section>
+
+      <section class="apps-section" id="apps">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">THE COLLECTION</p>
+            <h2>Explore the <em>workshop.</em></h2>
+          </div>
+          <div class="app-count"><strong id="appCount">00</strong><span>EXPERIMENTS<br>IN THE MAKING</span></div>
+        </div>
+        <div class="filter-row" id="filterRow" aria-label="Filter apps">
+          <button class="filter-chip active" data-filter="all" type="button">ALL</button>
+          <button class="filter-chip" data-filter="motion" type="button">MOTION</button>
+          <button class="filter-chip" data-filter="visual" type="button">VISUAL</button>
+          <button class="filter-chip" data-filter="director" type="button">DIRECTOR'S</button>
+          <button class="filter-chip" data-filter="world" type="button">WORLDS</button>
+        </div>
+        <div class="apps-grid" id="appsGrid">
+          <div class="loading-card">Preparing the collection…</div>
+        </div>
+        <div class="collection-footer">
+          <span>THE LAB IS ALWAYS A WORK IN PROGRESS.</span>
+          <span>MORE EXPERIMENTS SOON <b>✳</b></span>
+        </div>
+      </section>
+
+      <section class="bottom-note">
+        <span class="bottom-star">✳</span>
+        <p>“The important thing is to keep creating.”</p>
+        <span class="bottom-caption">A PRIVATE PLAYGROUND FOR CURIOSITY</span>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>THE CREATIVE LAB © 2026</span>
+      <span>MADE OF IDEAS & A LITTLE CODE</span>
+      <a href="https://github.com/karinmanurov-web/myserver" target="_blank" rel="noreferrer">GITHUB ↗</a>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog class="about-dialog" id="aboutDialog">
+    <button class="dialog-close" id="closeAbout" type="button" aria-label="Close">×</button>
+    <p class="eyebrow">A NOTE ABOUT THIS PLACE</p>
+    <h2>Welcome to<br><em>the lab.</em></h2>
+    <p>This is a growing home for small creative engines: tools that turn scripts, ideas and visual rules into things you can see, play and explore.</p>
+    <p>Some experiments are ready. Others are still taking shape. That's part of the fun.</p>
+    <span class="dialog-signature">IMAGINE · SCRIPT · CREATE</span>
+  </dialog>
+</body>
+</html>
