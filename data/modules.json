@@ -4,9 +4,9 @@
     "name": "Character Animator",
     "category": "motion",
     "icon": "🦊",
-    "description": "Bring illustrated characters to life with reusable animation scripts, expressions and little stories.",
-    "status": "PROTOTYPE",
-    "path": null
+    "description": "Bring the little fox to life: expressions, movement, timeline and video export.",
+    "status": "AVAILABLE",
+    "path": "./2323-fox-video-export/deepseek_html_20261027_62c97c.html"
   },
   {
     "id": "kinetic-typography",
@@ -79,5 +79,23 @@
     "description": "Build small living places with objects, weather, time cycles and scripted events.",
     "status": "IDEA",
     "path": null
+  },
+  {
+    "id": "vector-studio",
+    "name": "Vector Studio",
+    "category": "visual",
+    "icon": "✎",
+    "description": "Turn code into pictures and experiment with vector graphics.",
+    "status": "AVAILABLE",
+    "path": "./From%20code%20to%20pic/deepseek_html_20261104_9c5aa5.html"
+  },
+  {
+    "id": "automotive-photo-studio",
+    "name": "Automotive Photo Studio",
+    "category": "director",
+    "icon": "🚘",
+    "description": "Experiment with car photo color grading and cinematic looks.",
+    "status": "AVAILABLE",
+    "path": "./filters.html"
   }
 ]
