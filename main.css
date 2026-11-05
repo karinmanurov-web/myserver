@@ -5,3 +5,20 @@
 @media(max-width:900px){.page-shell{padding:0 4%}.dashboard-grid{grid-template-columns:1fr 1fr}.weather-widget{grid-row:span 2}.notes-widget{grid-column:auto}.hero{gap:3%}.apps-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.page-shell{padding:0 19px}.topbar{height:64px}.topbar-caption{display:none}.hero{grid-template-columns:1fr;padding:43px 0 36px;gap:28px}.hero-art{justify-self:stretch;height:205px}.dashboard-grid{grid-template-columns:1fr 1fr;gap:9px;margin-bottom:65px}.widget{padding:15px;min-height:180px}.weather-widget{grid-row:auto;grid-column:1/-1;min-height:250px}.clock-time{font-size:43px}.weather-main{margin-top:12px}.weather-temp{font-size:54px}.weather-icon{font-size:45px}.focus-time{font-size:42px}.inspiration-text{font-size:19px}.notes-widget{grid-column:1/-1}.apps-grid{grid-template-columns:1fr}.app-card{min-height:185px}.section-heading{align-items:end}.section-heading h2{font-size:34px}.app-count strong{font-size:29px}.app-count span{font-size:7px}.collection-footer{gap:12px;font-size:7px;line-height:1.6}.footer{gap:10px;flex-wrap:wrap;font-size:7px}.footer span:nth-child(2){display:none}.bottom-note{padding:38px 0}.about-dialog{margin:15px;padding:30px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Client-side entrance screen; this is not strong security. */
+.password-screen{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:#eee8dc}
+.password-screen[hidden]{display:none}
+.password-card{width:min(100%,390px);padding:42px 34px;background:#f8f5ee;border:1px solid #d9d0c2;border-radius:4px;box-shadow:0 24px 70px #42372918;display:flex;flex-direction:column;gap:14px}
+.password-mark{font-size:32px;color:#9b7655}
+.password-card h1{font:500 38px/1.1 'Playfair Display',serif;margin:0;color:#34312c}
+.password-card h1 em{color:#98785a}
+.password-card p:not(.eyebrow){font-size:13px;color:#777067;margin:0 0 8px}
+.password-label{font:10px 'DM Mono',monospace;letter-spacing:.13em;color:#81776b}
+.password-card input{width:100%;box-sizing:border-box;padding:14px;border:1px solid #d8cfc1;background:#fffdf8;font:16px 'DM Mono',monospace;letter-spacing:.2em;outline:none}
+.password-card input:focus{border-color:#9b7655}
+.password-card button{padding:14px;border:0;background:#34312c;color:#fff;font:11px 'DM Mono',monospace;letter-spacing:.12em;cursor:pointer}
+#passwordError{min-height:16px;color:#a34c3e;font-size:12px}
+.lab-back-link{position:fixed;top:16px;left:16px;z-index:9998;display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border:1px solid rgba(120,110,95,.35);border-radius:3px;background:rgba(250,247,240,.94);color:#39352f;text-decoration:none;font:11px 'DM Mono',monospace;letter-spacing:.08em;box-shadow:0 4px 18px #00000012;backdrop-filter:blur(8px)}
+.lab-back-link:hover{background:#fff}
+@media(max-width:600px){.password-card{padding:32px 24px}.lab-back-link{top:10px;left:10px;padding:9px 11px;font-size:10px}}
