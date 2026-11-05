@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automotive Photo Studio | Local Car Color Grading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        studio: {
+                            950: '#090a0c',
+                            900: '#111318',
+                            850: '#161920',
+                            800: '#1c2029',
+                            700: '#282e3d',
+                            600: '#3a4256',
+                            accent: '#3b82f6',
+                            accentHover: '#2563eb',
+                            gold: '#d97706',
+                            silver: '#94a3b8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom sleek dark scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111318; }
+        ::-webkit-scrollbar-thumb { background: #282e3d; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3a4256; }
+
+        /* Custom premium sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+            width: 100%;
+        }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #282e3d;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+        input[type=range]:hover::-webkit-slider-runnable-track { background: #3a4256; }
+        input[type=range]::-webkit-slider-thumb {
+            height: 14px;
+            width: 14px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -5px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.5);
+            transition: transform 0.1s, background 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #ffffff;
+        }
+
+        /* Color tab active state glow */
+        .color-dot-active {
+            ring: 2px;
+            ring-color: #3b82f6;
+            ring-offset: 2px;
+            ring-offset-color: #161920;
+        }
+
+        /* Prevent text selection during canvas drag */
+        .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-studio-950 text-slate-200 font-sans h-screen flex flex-col overflow-hidden no-select">
+
+    <header class="h-14 bg-studio-900 border-b border-studio-800 px-4 flex items-center justify-between z-20 shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="p-2 bg-studio-800 rounded-lg text-blue-500 border border-studio-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <circle cx="12" cy="13" r="3" stroke-width="2" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-sm font-bold tracking-wider uppercase text-slate-100 flex items-center gap-2">
+                    Automotive Photo Studio
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800/50 font-mono font-normal">v2.4 PRO</span>
+                </h1>
+                <p class="text-[11px] text-slate-400">Локальная профессиональная обработка автомобильных фото</p>
+            </div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="flex items-center space-x-2">
+            <label class="cursor-pointer bg-studio-800 hover:bg-studio-700 text-slate-200 text-xs px-3 py-1.5 rounded-md font-medium border border-studio-700 transition flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Загрузить фото
+                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" class="hidden">
+            </label>
+            <button id="btnSamplePhoto" class="bg-studio-800 hover:bg-studio-700 text-slate-300 text-xs px-3 py-1.5 rounded-md border border-studio-700 transition hidden sm:inline-flex items-center gap-1">
+                Тестовое фото
+            </button>
+            <button id="btnResetAll" class="bg-studio-800 hover:bg-red-950/40 hover:text-red-400 text-slate-400 text-xs px-3 py-1.5 rounded-md border border-studio-700 hover:border-red-800/50 transition">
+                Сбросить всё
+            </button>
+            <button id="btnDownload" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-1.5 rounded-md font-semibold shadow-lg shadow-blue-600/20 transition flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Экспорт JPG
+            </button>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- LEFT SIDEBAR: Presets -->
+        <aside class="w-72 bg-studio-900 border-r border-studio-800 flex flex-col shrink-0 z-10">
+            <!-- Sidebar Header -->
+            <div class="p-3 border-b border-studio-800 flex items-center justify-between">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Пресеты</span>
+                <button id="btnSavePreset" class="text-[11px] text-blue-400 hover:text-blue-300 font-medium bg-blue-950/60 border border-blue-800/50 px-2 py-0.5 rounded transition">
+                    + Сохранить свой
+                </button>
+            </div>
+
+            <!-- Preset Intensity Control -->
+            <div class="p-3 bg-studio-850 border-b border-studio-800">
+                <div class="flex items-center justify-between text-xs mb-1">
+                    <span class="text-slate-300 font-medium">Сила пресета (Preset Intensity)</span>
+                    <span id="presetIntensityValue" class="text-blue-400 font-mono text-[11px]">100%</span>
+                </div>
+                <input type="range" id="presetIntensity" min="0" max="100" value="100">
+            </div>
+
+            <!-- Presets Scroll Area -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-4" id="presetsContainer">
+                <!-- Categories populated by JS -->
+            </div>
+        </aside>
+
+        <!-- CENTER PANEL: Image Preview & Canvas -->
+        <main class="flex-1 bg-studio-950 relative flex flex-col items-center justify-center p-4 overflow-hidden" id="dropZone">
+            
+            <!-- Upload Drop Notice (if no image) -->
+            <div id="uploadPrompt" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center cursor-pointer hover:bg-studio-900/30 transition border-2 border-dashed border-studio-800 m-8 rounded-2xl">
+                <div class="p-4 bg-studio-850 rounded-full border border-studio-700 mb-4 text-blue-400 shadow-xl">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <h3 class="text-base font-semibold text-slate-200 mb-1">Перетащите сюда фото автомобиля</h3>
+                <p class="text-xs text-slate-400 max-w-sm mb-4">Поддерживаются форматы JPG, PNG, WebP. Вся обработка происходит строго на вашем компьютере.</p>
+                <button class="bg-studio-800 hover:bg-studio-700 text-slate-200 text-xs px-4 py-2 rounded-lg border border-studio-700 transition">Выбрать файл</button>
+            </div>
+
+            <!-- Main Interactive Display Container -->
+            <div id="canvasWrapper" class="relative max-w-full max-h-full flex items-center justify-center hidden shadow-2xl rounded-lg overflow-hidden border border-studio-800">
+                <!-- Main Canvas (WebGL Processed) -->
+                <canvas id="glCanvas" class="block max-w-full max-h-[calc(100vh-140px)] object-contain"></canvas>
+                
+                <!-- Original Canvas overlay for Before/After Split -->
+                <div id="splitOverlay" class="absolute top-0 left-0 bottom-0 overflow-hidden border-r-2 border-blue-500 shadow-xl pointer-events-none" style="width: 50%; display: none;">
+                    <canvas id="origCanvas" class="block max-h-[calc(100vh-140px)] object-contain"></canvas>
+                    <span class="absolute top-3 left-3 bg-black/70 text-slate-200 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded backdrop-blur border border-white/10">До (Original)</span>
+                </div>
+
+                <!-- Split Handle Indicator -->
+                <div id="splitHandle" class="absolute top-0 bottom-0 w-1 bg-blue-500 cursor-ew-resize z-10 flex items-center justify-center hidden" style="left: 50%;">
+                    <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg border border-white/40">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7l-5 5 5 5m8-10l5 5-5 5"/></svg>
+                    </div>
+                </div>
+
+                <span id="afterBadge" class="absolute top-3 right-3 bg-black/70 text-blue-400 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded backdrop-blur border border-white/10 pointer-events-none hidden">После (Edited)</span>
+            </div>
+
+            <!-- Bottom Floating Toolbar over Preview -->
+            <div id="bottomToolbar" class="absolute bottom-6 bg-studio-900/90 backdrop-blur-md border border-studio-700/80 rounded-full px-4 py-2 flex items-center space-x-4 shadow-2xl z-20 hidden">
+                <!-- Split Toggle Button -->
+                <button id="btnToggleSplit" class="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+                    <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m6 10V7M3 12h18"/></svg>
+                    <span id="splitBtnText">Разделение до/после</span>
+                </button>
+                <div class="w-px h-4 bg-studio-700"></div>
+                <!-- Hold to view original -->
+                <button id="btnHoldOriginal" class="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 transition select-none">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    Зажми для оригинала
+                </button>
+                <div class="w-px h-4 bg-studio-700"></div>
+                <!-- Image Resolution Info -->
+                <span id="imgDimensions" class="text-[11px] font-mono text-slate-400">0 x 0 px</span>
+            </div>
+        </main>
+
+        <aside class="w-80 bg-studio-900 border-l border-studio-800 flex flex-col shrink-0 z-10">
+            <!-- Adjustments Header -->
+            <div class="p-3 border-b border-studio-800 flex items-center justify-between">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Ручная коррекция</span>
+                <button id="btnResetAdjustments" class="text-[11px] text-slate-400 hover:text-slate-200 transition">Сброс параметров</button>
+            </div>
+
+            <!-- Accordion Controls -->
+            <div class="flex-1 overflow-y-auto divide-y divide-studio-800/60" id="adjustmentsAccordion">
+                
+                <!-- SECTION 1: Basic Light & Tone -->
+                <details class="group" open>
+                    <summary class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-studio-850/50 transition">
+                        <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span> Базовые тона (Light)
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="p-3.5 pt-0 space-y-3.5">
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Exposure (Экспозиция)</span><span class="val font-mono text-blue-400" id="v_exposure">0.00</span></div>
+                            <input type="range" id="exposure" min="-2.0" max="2.0" step="0.02" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Contrast (Контраст)</span><span class="val font-mono text-blue-400" id="v_contrast">0</span></div>
+                            <input type="range" id="contrast" min="-100" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Highlights (Света)</span><span class="val font-mono text-blue-400" id="v_highlights">0</span></div>
+                            <input type="range" id="highlights" min="-100" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Shadows (Тени)</span><span class="val font-mono text-blue-400" id="v_shadows">0</span></div>
+                            <input type="range" id="shadows" min="-100" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Whites (Белые)</span><span class="val font-mono text-blue-400" id="v_whites">0</span></div>
+                            <input type="range" id="whites" min="-100" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Blacks (Чёрные)</span><span class="val font-mono text-blue-400" id="v_blacks">0</span></div>
+                            <input type="range" id="blacks" min="-100" max="100" step="1" value="0">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- SECTION 2: White Balance & Color -->
+                <details class="group" open>
+                    <summary class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-studio-850/50 transition">
+                        <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span> Цвет и Баланс белого
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="p-3.5 pt-0 space-y-3.5">
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Temperature (Температура)</span><span class="val font-mono text-blue-400" id="v_temperature">0</span></div>
+                            <input type="range" id="temperature" min="-50" max="50" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Tint (Оттенок)</span><span class="val font-mono text-blue-400" id="v_tint">0</span></div>
+                            <input type="range" id="tint" min="-50" max="50" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Saturation (Насыщенность)</span><span class="val font-mono text-blue-400" id="v_saturation">0</span></div>
+                            <input type="range" id="saturation" min="-100" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Vibrance (Сочность)</span><span class="val font-mono text-blue-400" id="v_vibrance">0</span></div>
+                            <input type="range" id="vibrance" min="-100" max="100" step="1" value="0">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- SECTION 3: Automotive Specific Tools -->
+                <details class="group" open>
+                    <summary class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-studio-850/50 transition">
+                        <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Автомобильные спец-инструменты
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="p-3.5 pt-0 space-y-3.5">
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300" title="Уровень точной точки чёрного для дисков и арок">Black Level (Уровень чёрного)</span><span class="val font-mono text-blue-400" id="v_blackLevel">0</span></div>
+                            <input type="range" id="blackLevel" min="-50" max="50" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300" title="Усиление детализации зерна металлика и микробликов кузова">Metallic Detail (Детализация металлика)</span><span class="val font-mono text-blue-400" id="v_metallicDetail">0</span></div>
+                            <input type="range" id="metallicDetail" min="0" max="50" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300" title="Глубина цвета лакокрасочного покрытия">Paint Depth (Глубина ЛКП)</span><span class="val font-mono text-blue-400" id="v_paintDepth">0</span></div>
+                            <input type="range" id="paintDepth" min="-50" max="50" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300" title="Контроль пересвеченных бликов на изгибах кузова">Highlight Control (Контроль бликов)</span><span class="val font-mono text-blue-400" id="v_highlightControl">0</span></div>
+                            <input type="range" id="highlightControl" min="-50" max="50" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300" title="Контрастность и четкость отражений на стеклах и кузове">Reflection Control (Контраст отражений)</span><span class="val font-mono text-blue-400" id="v_reflectionControl">0</span></div>
+                            <input type="range" id="reflectionControl" min="-50" max="50" step="1" value="0">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- SECTION 4: HSL Panel -->
+                <details class="group">
+                    <summary class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-studio-850/50 transition">
+                        <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span> HSL Панель цветов
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="p-3.5 pt-0 space-y-3">
+                        <!-- Color Dots Selector -->
+                        <div class="flex justify-between items-center bg-studio-850 p-2 rounded-lg border border-studio-800" id="hslColorSelector">
+                            <!-- Populated dynamically: Red, Orange, Yellow, Green, Cyan, Blue, Purple, Magenta -->
+                        </div>
+                        
+                        <div class="text-[11px] font-semibold text-slate-400 capitalize text-center" id="hslSelectedChannelName">Канал: Red</div>
+
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Hue (Тон)</span><span class="val font-mono text-blue-400" id="v_hslHue">0</span></div>
+                            <input type="range" id="hslHue" min="-100" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Saturation (Насыщенность)</span><span class="val font-mono text-blue-400" id="v_hslSat">0</span></div>
+                            <input type="range" id="hslSat" min="-100" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Luminance (Яркость)</span><span class="val font-mono text-blue-400" id="v_hslLum">0</span></div>
+                            <input type="range" id="hslLum" min="-100" max="100" step="1" value="0">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- SECTION 5: Color Grading / Split Toning -->
+                <details class="group">
+                    <summary class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-studio-850/50 transition">
+                        <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Split Toning / Тонирование
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="p-3.5 pt-0 space-y-3.5">
+                        <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Тени (Shadows)</div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Shadows Hue (Тон теней)</span><span class="val font-mono text-blue-400" id="v_splitShadowsHue">0°</span></div>
+                            <input type="range" id="splitShadowsHue" min="0" max="360" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Shadows Sat (Насыщенность)</span><span class="val font-mono text-blue-400" id="v_splitShadowsSat">0</span></div>
+                            <input type="range" id="splitShadowsSat" min="0" max="100" step="1" value="0">
+                        </div>
+
+                        <div class="border-t border-studio-800 pt-3 text-[11px] font-medium text-slate-400 uppercase tracking-wider">Света (Highlights)</div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Highlights Hue (Тон светов)</span><span class="val font-mono text-blue-400" id="v_splitHighlightsHue">0°</span></div>
+                            <input type="range" id="splitHighlightsHue" min="0" max="360" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Highlights Sat (Насыщенность)</span><span class="val font-mono text-blue-400" id="v_splitHighlightsSat">0</span></div>
+                            <input type="range" id="splitHighlightsSat" min="0" max="100" step="1" value="0">
+                        </div>
+
+                        <div class="border-t border-studio-800 pt-3 control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Balance (Баланс)</span><span class="val font-mono text-blue-400" id="v_splitBalance">0</span></div>
+                            <input type="range" id="splitBalance" min="-100" max="100" step="1" value="0">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- SECTION 6: Detail, Vignette & Texture -->
+                <details class="group" open>
+                    <summary class="flex items-center justify-between p-3.5 cursor-pointer hover:bg-studio-850/50 transition">
+                        <span class="text-xs font-semibold text-slate-200 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Детализация и Виньетка
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="p-3.5 pt-0 space-y-3.5">
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Texture (Текстура)</span><span class="val font-mono text-blue-400" id="v_texture">0</span></div>
+                            <input type="range" id="texture" min="0" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Clarity (Четкость)</span><span class="val font-mono text-blue-400" id="v_clarity">0</span></div>
+                            <input type="range" id="clarity" min="-100" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Sharpness (Резкость)</span><span class="val font-mono text-blue-400" id="v_sharpness">0</span></div>
+                            <input type="range" id="sharpness" min="0" max="100" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Vignette (Виньетка)</span><span class="val font-mono text-blue-400" id="v_vignette">0</span></div>
+                            <input type="range" id="vignette" min="-100" max="0" step="1" value="0">
+                        </div>
+                        <div class="control-group">
+                            <div class="flex justify-between text-xs mb-1"><span class="text-slate-300">Grain (Зернистость)</span><span class="val font-mono text-blue-400" id="v_grain">0</span></div>
+                            <input type="range" id="grain" min="0" max="100" step="1" value="0">
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+        </aside>
+    </div>
+
+    <div id="savePresetModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-studio-900 border border-studio-700 rounded-xl w-full max-w-md p-5 shadow-2xl space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-100">Сохранить текущий пресет</h3>
+            <p class="text-xs text-slate-400">Сохранённый пресет сохранит все текущие позиции ползунков и будет доступен в вашей локальной коллекции браузера.</p>
+            <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Название пресета</label>
+                <input type="text" id="presetNameInput" placeholder="Например: My Dark AMG" class="w-full bg-studio-950 border border-studio-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button id="btnCancelSavePreset" class="px-4 py-1.5 bg-studio-800 hover:bg-studio-700 text-slate-300 text-xs rounded-md transition">Отмена</button>
+                <button id="btnConfirmSavePreset" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium rounded-md shadow-lg transition">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*
+         * AUTOMOTIVE PHOTO STUDIO ENGINE
+         * Completely local WebGL pipeline designed for high-end automotive editorial color grading.
+         */
+
+        // 1. DEFAULT BASE ADJUSTMENT VALUES
+        const DEFAULT_ADJUSTMENTS = {
+            exposure: 0,
+            contrast: 0,
+            highlights: 0,
+            shadows: 0,
+            whites: 0,
+            blacks: 0,
+            temperature: 0,
+            tint: 0,
+            saturation: 0,
+            vibrance: 0,
+            blackLevel: 0,
+            metallicDetail: 0,
+            paintDepth: 0,
+            highlightControl: 0,
+            reflectionControl: 0,
+            texture: 0,
+            clarity: 0,
+            sharpness: 0,
+            vignette: 0,
+            grain: 0,
+            // Split Toning
+            splitShadowsHue: 0,
+            splitShadowsSat: 0,
+            splitHighlightsHue: 0,
+            splitHighlightsSat: 0,
+            splitBalance: 0,
+            // HSL (8 Channels: Red, Orange, Yellow, Green, Cyan, Blue, Purple, Magenta)
+            hsl: {
+                red: { h: 0, s: 0, l: 0 },
+                orange: { h: 0, s: 0, l: 0 },
+                yellow: { h: 0, s: 0, l: 0 },
+                green: { h: 0, s: 0, l: 0 },
+                cyan: { h: 0, s: 0, l: 0 },
+                blue: { h: 0, s: 0, l: 0 },
+                purple: { h: 0, s: 0, l: 0 },
+                magenta: { h: 0, s: 0, l: 0 }
+            }
+        };
+
+        // Current Active Adjustments state
+        let currentAdjustments = JSON.parse(JSON.stringify(DEFAULT_ADJUSTMENTS));
+
+        // Selected HSL color tab ('red', 'orange', etc.)
+        let activeHslChannel = 'red';
+
+        // Preset Intensity (0.0 to 1.0)
+        let presetIntensity = 1.0;
+        let activeBasePresetParams = null; // Stored preset target values for intensity scaling
+
+        // 2. PRESETS CATALOG
+        // Comments explain preset philosophy & tuning
+        const PRESET_CATEGORIES = [
+            {
+                id: 'luxury',
+                title: 'LUXURY / CINEMATIC',
+                presets: [
+                    {
+                        id: 'executive_silver',
+                        name: 'Executive Silver',
+                        description: 'Чистый дорогой editorial-look для серебристых и серых премиальных кузовов.',
+                        params: {
+                            exposure: -0.1, contrast: 12, highlights: -20, shadows: 8, whites: 4, blacks: -15,
+                            temperature: -3, tint: 1, saturation: -5, vibrance: 5, texture: 8, clarity: 7,
+                            sharpness: 10, vignette: -5, grain: 2, blackLevel: -5, metallicDetail: 15, paintDepth: 5,
+                            highlightControl: 10, reflectionControl: 8
+                        }
+                    },
+                    {
+                        id: 'golden_luxury',
+                        name: 'Golden Luxury',
+                        description: 'Мягкий золотой час без искусственного заваливания кузова в оранжевый.',
+                        params: {
+                            exposure: -0.15, contrast: 10, highlights: -25, shadows: 5, whites: 5, blacks: -12,
+                            temperature: 6, tint: 1, saturation: -2, vibrance: 8, texture: 7, clarity: 5,
+                            sharpness: 8, vignette: -7, grain: 3, blackLevel: -2, metallicDetail: 8, paintDepth: 10,
+                            splitHighlightsHue: 40, splitHighlightsSat: 8, splitBalance: 10
+                        }
+                    },
+                    {
+                        id: 'night_executive',
+                        name: 'Night Executive',
+                        description: 'Глубокий ночной фон, парковки, мокрый асфальт с яркими отражениями.',
+                        params: {
+                            exposure: -0.35, contrast: 20, highlights: -30, shadows: 5, whites: 8, blacks: -25,
+                            temperature: -8, tint: 2, saturation: -6, vibrance: 7, texture: 10, clarity: 10,
+                            sharpness: 8, vignette: -12, grain: 5, blackLevel: -10, reflectionControl: 20, paintDepth: 12
+                        }
+                    }
+                ]
+            },
+            {
+                id: 'performance',
+                title: 'PERFORMANCE / AGGRESSIVE',
+                presets: [
+                    {
+                        id: 'track',
+                        name: 'Track',
+                        description: 'BMW M, AMG, Porsche, JDM: плотный кузов, глубокие тени и микроконтраст.',
+                        params: {
+                            exposure: -0.2, contrast: 25, highlights: -18, shadows: -12, whites: 5, blacks: -30,
+                            temperature: -3, tint: 1, saturation: -8, vibrance: 10, texture: 18, clarity: 16,
+                            sharpness: 12, vignette: -10, grain: 4, metallicDetail: 25, reflectionControl: 15
+                        }
+                    },
+                    {
+                        id: 'dark_machine',
+                        name: 'Dark Machine',
+                        description: 'Агрессивный тёмный силуэт с сохранением локальной читаемости штамповки кузова.',
+                        params: {
+                            exposure: -0.3, contrast: 28, highlights: -25, shadows: -5, whites: 3, blacks: -35,
+                            temperature: -5, tint: 2, saturation: -12, vibrance: 6, texture: 20, clarity: 18,
+                            sharpness: 10, vignette: -15, grain: 6, blackLevel: -15, metallicDetail: 20, paintDepth: 15
+                        }
+                    },
+                    {
+                        id: 'motion',
+                        name: 'Motion',
+                        description: 'Энергичная контрастная обработка для трековых кадров с динамикой.',
+                        params: {
+                            exposure: -0.15, contrast: 20, highlights: -20, shadows: -5, whites: 5, blacks: -22,
+                            temperature: -5, tint: 1, saturation: -5, vibrance: 10, texture: 10, clarity: 10,
+                            sharpness: 6, vignette: -8, grain: 4, reflectionControl: 12
+                        }
+                    }
+                ]
+            },
+            {
+                id: 'clean_automotive',
+                title: 'CLEAN AUTOMOTIVE',
+                presets: [
+                    {
+                        id: 'catalogue',
+                        name: 'Catalogue',
+                        description: 'Официальный журнальный стиль: естественные цвета, геометрия и максимальная детализация.',
+                        params: {
+                            exposure: 0, contrast: 5, highlights: -15, shadows: 8, whites: 5, blacks: -8,
+                            temperature: 0, tint: 0, saturation: 0, vibrance: 4, texture: 8, clarity: 4,
+                            sharpness: 10, vignette: 0, grain: 0, highlightControl: 12
+                        }
+                    },
+                    {
+                        id: 'urban_clean',
+                        name: 'Urban Clean',
+                        description: 'Городской бетон, стекло, холодноватый фон и выделение кузова из окружения.',
+                        params: {
+                            exposure: -0.1, contrast: 12, highlights: -20, shadows: 4, whites: 4, blacks: -14,
+                            temperature: -5, tint: 0, saturation: -7, vibrance: 7, texture: 8, clarity: 7,
+                            sharpness: 10, vignette: -4, grain: 2, metallicDetail: 10
+                        }
+                    },
+                    {
+                        id: 'rain',
+                        name: 'Rain',
+                        description: 'Мокрый асфальт, пасмурный день, отражения и глубокий цвет капель на кузове.',
+                        params: {
+                            exposure: -0.25, contrast: 15, highlights: -30, shadows: 6, whites: 4, blacks: -18,
+                            temperature: -8, tint: 1, saturation: -8, vibrance: 6, texture: 12, clarity: 8,
+                            sharpness: 8, vignette: -8, grain: 4, reflectionControl: 25, highlightControl: 15
+                        }
+                    }
+                ]
+            }
+        ];
+
+        /* Custom user presets loaded from localStorage */
+        let customPresets = [];
+        function loadCustomPresets() {
+            try {
+                const stored = localStorage.getItem('auto_studio_custom_presets');
+                if (stored) customPresets = JSON.parse(stored);
+            } catch (e) {
+                console.warn('Unable to load stored presets from localStorage:', e);
+            }
+        }
+        function saveCustomPresetsToStorage() {
+            try {
+                localStorage.setItem('auto_studio_custom_presets', JSON.stringify(customPresets));
+            } catch (e) {
+                console.warn('Unable to save presets:', e);
+            }
+        }
+
+        // 3. WEBGL ENGINE INITIALIZATION & SHADER CODE
+        let glCanvas = document.getElementById('glCanvas');
+        let gl = glCanvas.getContext('webgl', { preserveDrawingBuffer: true });
+        let origCanvas = document.getElementById('origCanvas');
+        let origCtx = origCanvas.getContext('2d');
+
+        let loadedImage = null;
+        let texture = null;
+        let program = null;
+
+        // Vertex Shader
+        const vsSource = `
+            attribute vec2 a_position;
+            attribute vec2 a_texCoord;
+            varying vec2 v_texCoord;
+            void main() {
+                gl_Position = vec4(a_position, 0.0, 1.0);
+                v_texCoord = vec2(a_texCoord.x, 1.0 - a_texCoord.y);
+            }
+        `;
+
+        // Fragment Shader: Complete automotive color-grading algorithm
+        const fsSource = `
+            precision mediump float;
+            varying vec2 v_texCoord;
+            uniform sampler2D u_image;
+            uniform vec2 u_resolution;
+
+            // Basic Tone
+            uniform float u_exposure;
+            uniform float u_contrast;
+            uniform float u_highlights;
+            uniform float u_shadows;
+            uniform float u_whites;
+            uniform float u_blacks;
+
+            // Color & Temp
+            uniform float u_temp;
+            uniform float u_tint;
+            uniform float u_saturation;
+            uniform float u_vibrance;
+
+            // Automotive Tools
+            uniform float u_blackLevel;
+            uniform float u_metallicDetail;
+            uniform float u_paintDepth;
+            uniform float u_highlightControl;
+            uniform float u_reflectionControl;
+
+            // Effects
+            uniform float u_texture;
+            uniform float u_clarity;
+            uniform float u_sharpness;
+            uniform float u_vignette;
+            uniform float u_grain;
+
+            // Split Toning
+            uniform vec3 u_splitShadows; // (hue_rad, sat, balance)
+            uniform vec2 u_splitHighlights; // (hue_rad, sat)
+
+            // HSL Hue Shift RGB Helpers
+            vec3 rgb2hsl(vec3 c) {
+                float maxC = max(max(c.r, c.g), c.b);
+                float minC = min(min(c.r, c.g), c.b);
+                float delta = maxC - minC;
+                float h = 0.0;
+                float s = 0.0;
+                float l = (maxC + minC) / 2.0;
+
+                if (delta > 0.00001) {
+                    s = l < 0.5 ? delta / (maxC + minC) : delta / (2.0 - maxC - minC);
+                    if (c.r == maxC) h = (c.g - c.b) / delta + (c.g < c.b ? 6.0 : 0.0);
+                    else if (c.g == maxC) h = (c.b - c.r) / delta + 2.0;
+                    else h = (c.r - c.g) / delta + 4.0;
+                    h /= 6.0;
+                }
+                return vec3(h, s, l);
+            }
+
+            float hue2rgb(float p, float q, float t) {
+                if (t < 0.0) t += 1.0;
+                if (t > 1.0) t -= 1.0;
+                if (t < 1.0/6.0) return p + (q - p) * 6.0 * t;
+                if (t < 1.0/2.0) return q;
+                if (t < 2.0/3.0) return p + (q - p) * (2.0/3.0 - t) * 6.0;
+                return p;
+            }
+
+            vec3 hsl2rgb(vec3 hsl) {
+                if (hsl.y == 0.0) return vec3(hsl.z);
+                float q = hsl.z < 0.5 ? hsl.z * (1.0 + hsl.y) : hsl.z + hsl.y - hsl.z * hsl.y;
+                float p = 2.0 * hsl.z - q;
+                return vec3(
+                    hue2rgb(p, q, hsl.x + 1.0/3.0),
+                    hue2rgb(p, q, hsl.x),
+                    hue2rgb(p, q, hsl.x - 1.0/3.0)
+                );
+            }
+
+            // Pseudo-random noise generator for grain
+            float rand(vec2 co) {
+                return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+            }
+
+            void main() {
+                vec4 texColor = texture2D(u_image, v_texCoord);
+                vec3 color = texColor.rgb;
+
+                // --- 1. SHARPNESS & TEXTURE HIGH PASS (3x3 Laplacian sampling) ---
+                if (u_sharpness > 0.0 || u_texture > 0.0 || u_metallicDetail > 0.0) {
+                    vec2 step = 1.0 / u_resolution;
+                    vec3 n = texture2D(u_image, v_texCoord + vec2(0.0, -step.y)).rgb;
+                    vec3 s = texture2D(u_image, v_texCoord + vec2(0.0, step.y)).rgb;
+                    vec3 e = texture2D(u_image, v_texCoord + vec2(step.x, 0.0)).rgb;
+                    vec3 w = texture2D(u_image, v_texCoord + vec2(-step.x, 0.0)).rgb;
+                    vec3 lap = color * 4.0 - (n + s + e + w);
+                    
+                    float luma = dot(color, vec3(0.299, 0.587, 0.114));
+                    // Metallic detail targets metallic flakes in mid-high highlights
+                    float metallicMask = smoothstep(0.4, 0.85, luma);
+                    
+                    color += lap * (u_sharpness * 0.015 + u_texture * 0.01 + u_metallicDetail * 0.02 * metallicMask);
+                }
+
+                // --- 2. EXPOSURE & BLACK LEVEL ---
+                color *= pow(2.0, u_exposure);
+                color += vec3(u_blackLevel * 0.002);
+
+                // --- 3. CONTRAST & CLARITY ---
+                float lum = dot(color, vec3(0.299, 0.587, 0.114));
+                float contrastFactor = (u_contrast + 100.0) / 100.0;
+                contrastFactor = contrastFactor * contrastFactor;
+                color = (color - 0.5) * contrastFactor + 0.5;
+
+                // Clarity midtone contrast boost
+                float midtoneMask = 1.0 - abs(lum - 0.5) * 2.0;
+                color += (color - 0.5) * (u_clarity * 0.005 * midtoneMask);
+
+                // --- 4. HIGHLIGHTS, SHADOWS, WHITES, BLACKS & AUTOMOTIVE PAINT CONTROLS ---
+                lum = dot(color, vec3(0.299, 0.587, 0.114));
+                
+                // Shadow & Highlight masks
+                float shadowMask = smoothstep(0.5, 0.0, lum);
+                float highlightMask = smoothstep(0.5, 1.0, lum);
+                float whiteMask = smoothstep(0.8, 1.0, lum);
+                float blackMask = smoothstep(0.2, 0.0, lum);
+
+                // Highlight Control (Roll off specular hot spots)
+                float rolledHighlights = u_highlights * 0.004 - u_highlightControl * 0.005;
+                color += color * (rolledHighlights * highlightMask);
+                color += color * (u_shadows * 0.004 * shadowMask);
+                color += color * (u_whites * 0.003 * whiteMask);
+                color += color * (u_blacks * 0.003 * blackMask);
+
+                // Paint Depth (Rich midtone compression)
+                if (u_paintDepth != 0.0) {
+                    color = mix(color, pow(color, vec3(1.0 - u_paintDepth * 0.003)), midtoneMask * 0.7);
+                }
+
+                // Reflection Control (Boost specular contrast on car body reflections)
+                if (u_reflectionControl > 0.0) {
+                    float reflMask = smoothstep(0.65, 0.95, lum);
+                    color += (color - 0.6) * (u_reflectionControl * 0.008 * reflMask);
+                }
+
+                // --- 5. TEMPERATURE & TINT ---
+                color.r += u_temp * 0.003;
+                color.b -= u_temp * 0.003;
+                color.g += u_tint * 0.003;
+
+                // --- 6. SATURATION & VIBRANCE ---
+                lum = dot(color, vec3(0.299, 0.587, 0.114));
+                float maxChan = max(color.r, max(color.g, color.b));
+                float satAmount = (maxChan - lum) / max(maxChan, 0.001);
+                
+                // Vibrance affects less-saturated colors more
+                float vibranceFactor = u_vibrance * 0.01 * (1.0 - satAmount);
+                float totalSat = 1.0 + (u_saturation * 0.01) + vibranceFactor;
+                color = mix(vec3(lum), color, totalSat);
+
+                // --- 7. SPLIT TONING ---
+                lum = dot(color, vec3(0.299, 0.587, 0.114));
+                float bal = u_splitShadows.z * 0.005;
+                float shadowTonalWeight = smoothstep(0.5 + bal, 0.0, lum);
+                float highlightTonalWeight = smoothstep(0.5 + bal, 1.0, lum);
+
+                if (u_splitShadows.y > 0.0) {
+                    vec3 shadowColor = hsl2rgb(vec3(u_splitShadows.x, u_splitShadows.y * 0.01, 0.5));
+                    color = mix(color, color * shadowColor * 2.0, shadowTonalWeight * 0.5);
+                }
+                if (u_splitHighlights.y > 0.0) {
+                    vec3 hlColor = hsl2rgb(vec3(u_splitHighlights.x, u_splitHighlights.y * 0.01, 0.5));
+                    color = mix(color, color * hlColor * 2.0, highlightTonalWeight * 0.5);
+                }
+
+                // --- 8. VIGNETTE ---
+                if (u_vignette < 0.0) {
+                    vec2 uv = v_texCoord - 0.5;
+                    float dist = length(uv);
+                    float vig = smoothstep(0.7, 0.2, dist * (-u_vignette * 0.025 + 0.5));
+                    color *= vig;
+                }
+
+                // --- 9. GRAIN ---
+                if (u_grain > 0.0) {
+                    float noise = (rand(v_texCoord * u_resolution) - 0.5) * (u_grain * 0.002);
+                    color += noise;
+                }
+
+                gl_FragColor = vec4(clamp(color, 0.0, 1.0), texColor.a);
+            }
+        `;
+
+        // Initialize WebGL Context & Shaders
+        function initWebGL() {
+            if (!gl) {
+                alert("Ваш браузер не поддерживает WebGL. Функции обработки будут ограничены.");
+                return;
+            }
+
+            const vs = compileShader(gl.VERTEX_SHADER, vsSource);
+            const fs = compileShader(gl.FRAGMENT_SHADER, fsSource);
+            program = gl.createProgram();
+            gl.attachShader(program, vs);
+            gl.attachShader(program, fs);
+            gl.linkProgram(program);
+
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+                console.error("Shader Program Linking Error:", gl.getProgramInfoLog(program));
+                return;
+            }
+
+            gl.useProgram(program);
+
+            // Buffer setup for fullscreen quad
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                -1, -1,  1, -1, -1,  1,
+                -1,  1,  1, -1,  1,  1
+            ]), gl.STATIC_DRAW);
+
+            const posLoc = gl.getAttribLocation(program, "a_position");
+            gl.enableVertexAttribArray(posLoc);
+            gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+            const texBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                0, 0,  1, 0,  0, 1,
+                0, 1,  1, 0,  1, 1
+            ]), gl.STATIC_DRAW);
+
+            const texLoc = gl.getAttribLocation(program, "a_texCoord");
+            gl.enableVertexAttribArray(texLoc);
+            gl.vertexAttribPointer(texLoc, 2, gl.FLOAT, false, 0, 0);
+
+            texture = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        }
+
+        function compileShader(type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error("Shader Compile Error:", gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        }
+
+        function render() {
+            if (!loadedImage || !gl || !program) return;
+
+            gl.useProgram(program);
+            gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+
+            // Bind Uniforms
+            gl.uniform2f(gl.getUniformLocation(program, "u_resolution"), glCanvas.width, glCanvas.height);
+
+            // Basic Tone
+            gl.uniform1f(gl.getUniformLocation(program, "u_exposure"), currentAdjustments.exposure);
+            gl.uniform1f(gl.getUniformLocation(program, "u_contrast"), currentAdjustments.contrast);
+            gl.uniform1f(gl.getUniformLocation(program, "u_highlights"), currentAdjustments.highlights);
+            gl.uniform1f(gl.getUniformLocation(program, "u_shadows"), currentAdjustments.shadows);
+            gl.uniform1f(gl.getUniformLocation(program, "u_whites"), currentAdjustments.whites);
+            gl.uniform1f(gl.getUniformLocation(program, "u_blacks"), currentAdjustments.blacks);
+
+            // Color & Temp
+            gl.uniform1f(gl.getUniformLocation(program, "u_temp"), currentAdjustments.temperature);
+            gl.uniform1f(gl.getUniformLocation(program, "u_tint"), currentAdjustments.tint);
+            gl.uniform1f(gl.getUniformLocation(program, "u_saturation"), currentAdjustments.saturation);
+            gl.uniform1f(gl.getUniformLocation(program, "u_vibrance"), currentAdjustments.vibrance);
+
+            // Automotive
+            gl.uniform1f(gl.getUniformLocation(program, "u_blackLevel"), currentAdjustments.blackLevel);
+            gl.uniform1f(gl.getUniformLocation(program, "u_metallicDetail"), currentAdjustments.metallicDetail);
+            gl.uniform1f(gl.getUniformLocation(program, "u_paintDepth"), currentAdjustments.paintDepth);
+            gl.uniform1f(gl.getUniformLocation(program, "u_highlightControl"), currentAdjustments.highlightControl);
+            gl.uniform1f(gl.getUniformLocation(program, "u_reflectionControl"), currentAdjustments.reflectionControl);
+
+            // Effects
+            gl.uniform1f(gl.getUniformLocation(program, "u_texture"), currentAdjustments.texture);
+            gl.uniform1f(gl.getUniformLocation(program, "u_clarity"), currentAdjustments.clarity);
+            gl.uniform1f(gl.getUniformLocation(program, "u_sharpness"), currentAdjustments.sharpness);
+            gl.uniform1f(gl.getUniformLocation(program, "u_vignette"), currentAdjustments.vignette);
+            gl.uniform1f(gl.getUniformLocation(program, "u_grain"), currentAdjustments.grain);
+
+            // Split Toning (Convert Hues to radians [0..1])
+            gl.uniform3f(gl.getUniformLocation(program, "u_splitShadows"),
+                (currentAdjustments.splitShadowsHue % 360) / 360.0,
+                currentAdjustments.splitShadowsSat,
+                currentAdjustments.splitBalance
+            );
+            gl.uniform2f(gl.getUniformLocation(program, "u_splitHighlights"),
+                (currentAdjustments.splitHighlightsHue % 360) / 360.0,
+                currentAdjustments.splitHighlightsSat
+            );
+
+            // Draw Quad
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+
+        // Load an Image into WebGL and Original Canvas
+        function loadImage(img) {
+            loadedImage = img;
+
+            // Set dimension attributes
+            glCanvas.width = img.naturalWidth || img.width;
+            glCanvas.height = img.naturalHeight || img.height;
+            origCanvas.width = glCanvas.width;
+            origCanvas.height = glCanvas.height;
+
+            // Render original to original canvas for comparison
+            origCtx.drawImage(img, 0, 0);
+
+            // Bind Texture to WebGL
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+
+            // Show UI elements
+            document.getElementById('uploadPrompt').classList.add('hidden');
+            document.getElementById('canvasWrapper').classList.remove('hidden');
+            document.getElementById('bottomToolbar').classList.remove('hidden');
+            document.getElementById('imgDimensions').innerText = `${glCanvas.width} x ${glCanvas.height} px`;
+
+            render();
+            updateSplitPosition(50);
+        }
+
+        const HSL_CHANNELS = [
+            { id: 'red', name: 'Red', color: '#ef4444' },
+            { id: 'orange', name: 'Orange', color: '#f97316' },
+            { id: 'yellow', name: 'Yellow', color: '#eab308' },
+            { id: 'green', name: 'Green', color: '#22c55e' },
+            { id: 'cyan', name: 'Cyan', color: '#06b6d4' },
+            { id: 'blue', name: 'Blue', color: '#3b82f6' },
+            { id: 'purple', name: 'Purple', color: '#a855f7' },
+            { id: 'magenta', name: 'Magenta', color: '#ec4899' }
+        ];
+
+        function renderHslSelector() {
+            const container = document.getElementById('hslColorSelector');
+            container.innerHTML = '';
+            HSL_CHANNELS.forEach(ch => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = `w-5 h-5 rounded-full transition-transform hover:scale-110 ${activeHslChannel === ch.id ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-studio-900 scale-110' : 'opacity-70'}`;
+                dot.style.backgroundColor = ch.color;
+                dot.title = ch.name;
+                dot.onclick = () => {
+                    activeHslChannel = ch.id;
+                    renderHslSelector();
+                    syncHslSlidersUI();
+                };
+                container.appendChild(dot);
+            });
+            document.getElementById('hslSelectedChannelName').innerText = `Канал: ${HSL_CHANNELS.find(c => c.id === activeHslChannel).name}`;
+        }
+
+        function syncHslSlidersUI() {
+            const channelData = currentAdjustments.hsl[activeHslChannel];
+            document.getElementById('hslHue').value = channelData.h;
+            document.getElementById('v_hslHue').innerText = channelData.h;
+            document.getElementById('hslSat').value = channelData.s;
+            document.getElementById('v_hslSat').innerText = channelData.s;
+            document.getElementById('hslLum').value = channelData.l;
+            document.getElementById('v_hslLum').innerText = channelData.l;
+        }
+
+        function buildPresetsSidebar() {
+            const container = document.getElementById('presetsContainer');
+            container.innerHTML = '';
+
+            // Render Standard Categories
+            PRESET_CATEGORIES.forEach(cat => {
+                const group = document.createElement('div');
+                group.className = 'space-y-2';
+
+                const title = document.createElement('h4');
+                title.className = 'text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1';
+                title.innerText = cat.title;
+                group.appendChild(title);
+
+                cat.presets.forEach(preset => {
+                    const card = createPresetCard(preset);
+                    group.appendChild(card);
+                });
+
+                container.appendChild(group);
+            });
+
+            // Render Custom User Presets Category if any
+            if (customPresets.length > 0) {
+                const group = document.createElement('div');
+                group.className = 'space-y-2 border-t border-studio-800 pt-3';
+
+                const title = document.createElement('h4');
+                title.className = 'text-[11px] font-bold text-blue-400 uppercase tracking-wider px-1 flex justify-between items-center';
+                title.innerText = 'МОИ ПРЕСЕТЫ';
+                group.appendChild(title);
+
+                customPresets.forEach((preset, index) => {
+                    const card = createPresetCard(preset, true, index);
+                    group.appendChild(card);
+                });
+
+                container.appendChild(group);
+            }
+        }
+
+        function createPresetCard(preset, isCustom = false, customIndex = -1) {
+            const card = document.createElement('div');
+            card.className = 'p-2.5 bg-studio-850 hover:bg-studio-800 border border-studio-800 hover:border-studio-700 rounded-lg cursor-pointer transition group relative';
+            card.onclick = () => applyPreset(preset);
+
+            const flex = document.createElement('div');
+            flex.className = 'flex items-start justify-between';
+
+            const info = document.createElement('div');
+            const name = document.createElement('div');
+            name.className = 'text-xs font-semibold text-slate-200 group-hover:text-blue-400 transition';
+            name.innerText = preset.name;
+
+            const desc = document.createElement('div');
+            desc.className = 'text-[10px] text-slate-400 mt-0.5 leading-snug';
+            desc.innerText = preset.description || 'Пользовательский пресет';
+
+            info.appendChild(name);
+            info.appendChild(desc);
+            flex.appendChild(info);
+
+            if (isCustom) {
+                const delBtn = document.createElement('button');
+                delBtn.className = 'text-slate-500 hover:text-red-400 p-1 transition opacity-0 group-hover:opacity-100';
+                delBtn.title = 'Удалить пресет';
+                delBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    customPresets.splice(customIndex, 1);
+                    saveCustomPresetsToStorage();
+                    buildPresetsSidebar();
+                };
+                flex.appendChild(delBtn);
+            }
+
+            card.appendChild(flex);
+            return card;
+        }
+
+        // Apply Preset with Intensity calculation
+        function applyPreset(preset) {
+            activeBasePresetParams = JSON.parse(JSON.stringify(preset.params));
+            recalculatePresetWithIntensity();
+        }
+
+        function recalculatePresetWithIntensity() {
+            if (!activeBasePresetParams) return;
+
+            const intensityRatio = presetIntensity / 100.0;
+
+            // Reset to clean baseline first
+            currentAdjustments = JSON.parse(JSON.stringify(DEFAULT_ADJUSTMENTS));
+
+            // Blend preset params with intensity
+            Object.keys(activeBasePresetParams).forEach(key => {
+                if (typeof activeBasePresetParams[key] === 'number') {
+                    currentAdjustments[key] = activeBasePresetParams[key] * intensityRatio;
+                }
+            });
+
+            syncAllSlidersUI();
+            render();
+        }
+
+        function syncAllSlidersUI() {
+            const rangeInputs = document.querySelectorAll('input[type=range]');
+            rangeInputs.forEach(input => {
+                const id = input.id;
+                if (id === 'presetIntensity') return;
+
+                if (id.startsWith('hsl')) {
+                    syncHslSlidersUI();
+                } else if (currentAdjustments[id] !== undefined) {
+                    input.value = currentAdjustments[id];
+                    const valDisplay = document.getElementById(`v_${id}`);
+                    if (valDisplay) {
+                        let text = currentAdjustments[id];
+                        if (id === 'exposure') text = (text > 0 ? '+' : '') + Number(text).toFixed(2);
+                        else if (id.includes('Hue')) text = text + '°';
+                        valDisplay.innerText = text;
+                    }
+                }
+            });
+        }
+
+        // Bind Range Inputs to State & WebGL Render Loop
+        function bindAdjustmentEvents() {
+            const controls = [
+                'exposure', 'contrast', 'highlights', 'shadows', 'whites', 'blacks',
+                'temperature', 'tint', 'saturation', 'vibrance',
+                'blackLevel', 'metallicDetail', 'paintDepth', 'highlightControl', 'reflectionControl',
+                'texture', 'clarity', 'sharpness', 'vignette', 'grain',
+                'splitShadowsHue', 'splitShadowsSat', 'splitHighlightsHue', 'splitHighlightsSat', 'splitBalance'
+            ];
+
+            controls.forEach(id => {
+                const input = document.getElementById(id);
+                if (!input) return;
+
+                input.addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value);
+                    currentAdjustments[id] = val;
+
+                    const display = document.getElementById(`v_${id}`);
+                    if (display) {
+                        let text = val;
+                        if (id === 'exposure') text = (val > 0 ? '+' : '') + val.toFixed(2);
+                        else if (id.includes('Hue')) text = val + '°';
+                        display.innerText = text;
+                    }
+                    render();
+                });
+            });
+
+            // HSL Sliders
+            ['hslHue', 'hslSat', 'hslLum'].forEach(id => {
+                const input = document.getElementById(id);
+                input.addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value, 10);
+                    const prop = id.replace('hsl', '').toLowerCase()[0]; // 'h', 's', 'l'
+                    currentAdjustments.hsl[activeHslChannel][prop] = val;
+                    document.getElementById(`v_${id}`).innerText = val;
+                    render();
+                });
+            });
+
+            // Preset Intensity Slider
+            const intensitySlider = document.getElementById('presetIntensity');
+            intensitySlider.addEventListener('input', (e) => {
+                presetIntensity = parseInt(e.target.value, 10);
+                document.getElementById('presetIntensityValue').innerText = `${presetIntensity}%`;
+                recalculatePresetWithIntensity();
+            });
+
+            // Reset Adjustments
+            document.getElementById('btnResetAdjustments').onclick = () => {
+                currentAdjustments = JSON.parse(JSON.stringify(DEFAULT_ADJUSTMENTS));
+                activeBasePresetParams = null;
+                syncAllSlidersUI();
+                render();
+            };
+
+            // Reset All
+            document.getElementById('btnResetAll').onclick = () => {
+                currentAdjustments = JSON.parse(JSON.stringify(DEFAULT_ADJUSTMENTS));
+                activeBasePresetParams = null;
+                presetIntensity = 100;
+                document.getElementById('presetIntensity').value = 100;
+                document.getElementById('presetIntensityValue').innerText = '100%';
+                syncAllSlidersUI();
+                render();
+            };
+        }
+
+        let isSplitting = false;
+        let isHoldingOriginal = false;
+
+        function updateSplitPosition(percent) {
+            const splitOverlay = document.getElementById('splitOverlay');
+            const splitHandle = document.getElementById('splitHandle');
+            splitOverlay.style.width = `${percent}%`;
+            splitHandle.style.left = `${percent}%`;
+        }
+
+        function initSplitComparison() {
+            const toggleBtn = document.getElementById('btnToggleSplit');
+            const splitOverlay = document.getElementById('splitOverlay');
+            const splitHandle = document.getElementById('splitHandle');
+            const wrapper = document.getElementById('canvasWrapper');
+
+            toggleBtn.onclick = () => {
+                isSplitting = !isSplitting;
+                if (isSplitting) {
+                    splitOverlay.style.display = 'block';
+                    splitHandle.classList.remove('hidden');
+                    document.getElementById('splitBtnText').innerText = 'Скрыть разделение';
+                    updateSplitPosition(50);
+                } else {
+                    splitOverlay.style.display = 'none';
+                    splitHandle.classList.add('hidden');
+                    document.getElementById('splitBtnText').innerText = 'Разделение до/после';
+                }
+            };
+
+            // Drag handle interaction
+            let dragging = false;
+            const onMove = (e) => {
+                if (!dragging || !isSplitting) return;
+                const rect = wrapper.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                let x = ((clientX - rect.left) / rect.width) * 100;
+                x = Math.max(0, Math.min(100, x));
+                updateSplitPosition(x);
+            };
+
+            splitHandle.addEventListener('mousedown', () => dragging = true);
+            splitHandle.addEventListener('touchstart', () => dragging = true);
+            window.addEventListener('mouseup', () => dragging = false);
+            window.addEventListener('touchend', () => dragging = false);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove);
+
+            // Hold original button
+            const holdBtn = document.getElementById('btnHoldOriginal');
+            const startHold = () => {
+                if (!loadedImage) return;
+                isHoldingOriginal = true;
+                splitOverlay.style.width = '100%';
+                splitOverlay.style.display = 'block';
+            };
+            const endHold = () => {
+                if (!isHoldingOriginal) return;
+                isHoldingOriginal = false;
+                if (!isSplitting) {
+                    splitOverlay.style.display = 'none';
+                } else {
+                    updateSplitPosition(50);
+                }
+            };
+
+            holdBtn.addEventListener('mousedown', startHold);
+            holdBtn.addEventListener('touchstart', startHold);
+            window.addEventListener('mouseup', endHold);
+            window.addEventListener('touchend', endHold);
+        }
+
+        function initFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const dropZone = document.getElementById('dropZone');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+
+            const handleFile = (file) => {
+                if (!file || !file.type.match(/^image\/(jpeg|png|webp)/)) {
+                    alert('Пожалуйста, выберите файл формата JPG, PNG или WebP.');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => loadImage(img);
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            };
+
+            fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+            uploadPrompt.onclick = () => fileInput.click();
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('bg-studio-900/50');
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('bg-studio-900/50');
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('bg-studio-900/50');
+                if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+            });
+
+            // Sample Photo Generator (High resolution synthetic metallic car gradient image for instant testing)
+            document.getElementById('btnSamplePhoto').onclick = () => {
+                const sampleCanvas = document.createElement('canvas');
+                sampleCanvas.width = 1920;
+                sampleCanvas.height = 1080;
+                const ctx = sampleCanvas.getContext('2d');
+
+                // Dark Editorial Background Gradient
+                const bgGrad = ctx.createLinearGradient(0, 0, 1920, 1080);
+                bgGrad.addColorStop(0, '#0f141d');
+                bgGrad.addColorStop(0.5, '#1e2430');
+                bgGrad.addColorStop(1, '#090b0e');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, 1920, 1080);
+
+                // Car Silhouette Outline & Specular Highlights
+                ctx.shadowColor = '#3b82f6';
+                ctx.shadowBlur = 30;
+
+                // Car Body Metallic Hood
+                const hoodGrad = ctx.createLinearGradient(300, 400, 1600, 800);
+                hoodGrad.addColorStop(0, '#334155');
+                hoodGrad.addColorStop(0.3, '#94a3b8');
+                hoodGrad.addColorStop(0.5, '#cbd5e1');
+                hoodGrad.addColorStop(0.7, '#475569');
+                hoodGrad.addColorStop(1, '#1e293b');
+
+                ctx.fillStyle = hoodGrad;
+                ctx.beginPath();
+                ctx.moveTo(300, 750);
+                ctx.lineTo(450, 550);
+                ctx.lineTo(750, 420);
+                ctx.lineTo(1300, 420);
+                ctx.lineTo(1620, 580);
+                ctx.lineTo(1700, 750);
+                ctx.lineTo(1650, 820);
+                ctx.lineTo(250, 820);
+                ctx.closePath();
+                ctx.fill();
+
+                // Wheels Specular Circles
+                ctx.shadowColor = '#64748b';
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.arc(500, 800, 130, 0, Math.PI * 2);
+                ctx.arc(1450, 800, 130, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 12;
+                ctx.stroke();
+
+                // High-contrast Reflection Lines
+                ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(480, 560);
+                ctx.lineTo(1580, 590);
+                ctx.stroke();
+
+                const img = new Image();
+                img.onload = () => loadImage(img);
+                img.src = sampleCanvas.toDataURL('image/jpeg');
+            };
+        }
+
+        function initExport() {
+            document.getElementById('btnDownload').onclick = () => {
+                if (!loadedImage) {
+                    alert('Загрузите фотографию перед экспортом.');
+                    return;
+                }
+
+                // Render current WebGL viewport to data URL
+                render();
+                const dataUrl = glCanvas.toDataURL('image/jpeg', 0.95);
+
+                const link = document.createElement('a');
+                link.download = `automotive_studio_${Date.now()}.jpg`;
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+        }
+
+        function initCustomPresetModal() {
+            const modal = document.getElementById('savePresetModal');
+            const input = document.getElementById('presetNameInput');
+
+            document.getElementById('btnSavePreset').onclick = () => {
+                input.value = '';
+                modal.classList.remove('hidden');
+                input.focus();
+            };
+
+            document.getElementById('btnCancelSavePreset').onclick = () => {
+                modal.classList.add('hidden');
+            };
+
+            document.getElementById('btnConfirmSavePreset').onclick = () => {
+                const name = input.value.trim();
+                if (!name) {
+                    alert('Введите название пресета.');
+                    return;
+                }
+
+                const newPreset = {
+                    id: 'custom_' + Date.now(),
+                    name: name,
+                    description: 'Пользовательский пресет',
+                    params: JSON.parse(JSON.stringify(currentAdjustments))
+                };
+
+                customPresets.push(newPreset);
+                saveCustomPresetsToStorage();
+                buildPresetsSidebar();
+                modal.classList.add('hidden');
+            };
+        }
+
+        window.onload = function() {
+            initWebGL();
+            loadCustomPresets();
+            renderHslSelector();
+            buildPresetsSidebar();
+            bindAdjustmentEvents();
+            initSplitComparison();
+            initFileUpload();
+            initExport();
+            initCustomPresetModal();
+
+            // Trigger auto-sample image load for immediate interactive demonstration
+            document.getElementById('btnSamplePhoto').click();
+        };
+    </script>
+</body>
+</html>
