@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Studio</title>
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #ddd; display: flex; height: 100vh; overflow: hidden; }
+        .panel { display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; }
+        .left { width: 35%; background: #252526; border-right: 1px solid #333; gap: 15px; overflow-y: auto; }
+        .right { width: 65%; background: #111; display: flex; flex-direction: column; }
+        h2 { font-size: 14px; text-transform: uppercase; color: #888; margin: 0 0 5px 0; }
+        textarea { width: 100%; height: 150px; background: #1e1e1e; color: #9cdcfe; border: 1px solid #333; padding: 10px; font-family: monospace; font-size: 12px; resize: vertical; box-sizing: border-box; border-radius: 4px; }
+        textarea:focus { outline: none; border-color: #007acc; }
+        button { background: #0e639c; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; margin-top: 5px; }
+        button:hover { background: #1177bb; }
+        button.secondary { background: #444; }
+        button.secondary:hover { background: #555; }
+        button.danger { background: #8b2a2a; }
+        #stage-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        #stage { background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.5); width: 100%; max-width: 400px; height: 100%; max-height: 711px; position: relative; overflow: hidden; border-radius: 8px; }
+        #stage svg { width: 100%; height: 100%; display: block; }
+        .toolbar { display: flex; gap: 10px; padding: 10px; background: #1e1e1e; border-top: 1px solid #333; }
+        .toolbar button { flex: 1; margin: 0; }
+        .status-bar { padding: 10px; background: #000; font-family: monospace; font-size: 12px; color: #4ec9b0; }
+    </style>
+</head>
+<body>
+
+    <!-- Левая панель: Управление -->
+    <div class="panel left">
+        <h2>1. Сцена (Генерация)</h2>
+        <textarea id="scene-input" placeholder='Вставьте сюда JSON сцены: {"elements": [...]}'></textarea>
+        <button onclick="loadScene()">Загрузить сцену</button>
+
+        <h2>2. Патчи (Исправления)</h2>
+        <textarea id="patch-input" placeholder='Вставьте сюда JSON патча: {"targetId": "...", "payload": "..."}'></textarea>
+        <button onclick="applyPatch()">Применить патч</button>
+
+        <h2>3. Ручная правка</h2>
+        <button class="secondary" onclick="toggleDragMode()">Включить перетаскивание</button>
+        <button class="secondary" onclick="resetSelection()">Снять выделение</button>
+
+        <h2>4. Экспорт</h2>
+        <button onclick="exportScene()">Сохранить финальный JSON</button>
+        <button class="secondary" onclick="downloadPNG()">Скачать PNG</button>
+
+        <h2>5. Анимация</h2>
+        <textarea id="anim-input" placeholder='Вставьте сюда JSON анимации...'></textarea>
+        <button onclick="loadAnimation()">Запустить анимацию</button>
+        <button class="danger" onclick="stopAnimation()">Стоп</button>
+    </div>
+
+    <!-- Правая панель: Холст -->
+    <div class="panel right">
+        <div id="stage-wrapper">
+            <div id="stage">
+                <!-- Сюда рендерится SVG -->
+            </div>
+        </div>
+        <div class="status-bar" id="status">Готов к работе.</div>
+    </div>
+
+    <script>
+        let currentScene = { elements: [] };
+        let currentAnimation = null;
+        let isDragging = false;
+        let selectedElement = null;
+
+        const stage = document.getElementById('stage');
+        const status = document.getElementById('status');
+
+        function updateStatus(msg) { status.textContent = msg; }
+
+        // --- 1. Загрузка сцены ---
+        function loadScene() {
+            try {
+                const data = JSON.parse(document.getElementById('scene-input').value);
+                if (!data.elements) throw new Error("Нет поля elements");
+                currentScene = data;
+                renderScene();
+                updateStatus(`Сцена загружена. Элементов: ${currentScene.elements.length}`);
+            } catch (e) {
+                alert("Ошибка сцены: " + e.message);
+            }
+        }
+
+        function renderScene() {
+            stage.innerHTML = '';
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("viewBox", "0 0 400 711");
+            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            
+            currentScene.elements.forEach(el => {
+                if (el.type === 'svg' && el.content) {
+                    // Создаем временный контейнер
+                    const tempGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    // Вставляем сырой SVG-код как HTML (это самый надежный способ для строк)
+                    tempGroup.innerHTML = el.content;
+                    
+                    // Переносим все дочерние узлы из tempGroup в наш main svg
+                    while (tempGroup.firstChild) {
+                        const child = tempGroup.firstChild;
+                        if (child.nodeType === 1) { // Если это элемент
+                            if (el.id) child.id = el.id; // Присваиваем ID
+                            if (el.transform) child.setAttribute('transform', el.transform);
+                        }
+                        svg.appendChild(child);
+                    }
+                } else if (el.tag) {
+                    const node = document.createElementNS("http://www.w3.org/2000/svg", el.tag);
+                    Object.keys(el.attrs || {}).forEach(key => {
+                        node.setAttribute(key, el.attrs[key]);
+                    });
+                    if (el.id) node.id = el.id;
+                    if (el.text) node.textContent = el.text;
+                    if (el.transform) node.setAttribute('transform', el.transform);
+                    svg.appendChild(node);
+                }
+            });
+            stage.appendChild(svg);
+        }
+
+        // --- 2. Патчи ---
+        function applyPatch() {
+            try {
+                const patch = JSON.parse(document.getElementById('patch-input').value);
+                if (!patch.targetId) throw new Error("Нет targetId");
+                
+                const svg = stage.querySelector('svg');
+                const target = svg.getElementById(patch.targetId);
+                if (!target) throw new Error("Элемент с ID " + patch.targetId + " не найден");
+
+                if (patch.action === 'replace') {
+                    // Замена всего элемента
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(patch.payload, "image/svg+xml");
+                    const newEl = doc.documentElement;
+                    newEl.id = patch.targetId;
+                    target.replaceWith(newEl);
+                } else if (patch.action === 'update') {
+                    // Обновление атрибутов
+                    Object.keys(patch.payload).forEach(key => {
+                        target.setAttribute(key, patch.payload[key]);
+                    });
+                }
+                
+                // Синхронизируем currentScene
+                const elIndex = currentScene.elements.findIndex(e => e.id === patch.targetId);
+                if (elIndex !== -1) {
+                    if (patch.action === 'replace') {
+                        currentScene.elements[elIndex].content = patch.payload;
+                    }
+                }
+                
+                updateStatus(`Патч применен к ${patch.targetId}`);
+            } catch (e) {
+                alert("Ошибка патча: " + e.message);
+            }
+        }
+
+        // --- 3. Ручное перетаскивание (базовое) ---
+        function toggleDragMode() {
+            isDragging = !isDragging;
+            const svg = stage.querySelector('svg');
+            if (!svg) return;
+            
+            if (isDragging) {
+                svg.style.cursor = 'crosshair';
+                svg.querySelectorAll('*').forEach(el => {
+                    el.addEventListener('mousedown', startDrag);
+                });
+                updateStatus("Режим перетаскивания ВКЛ. Кликните по элементу и тяните.");
+            } else {
+                svg.style.cursor = 'default';
+                svg.querySelectorAll('*').forEach(el => {
+                    el.removeEventListener('mousedown', startDrag);
+                });
+                updateStatus("Режим перетаскивания ВЫКЛ.");
+            }
+        }
+
+        let dragStartX, dragStartY, initialTransform;
+
+        function startDrag(e) {
+            if (!isDragging) return;
+            e.stopPropagation();
+            selectedElement = e.target;
+            selectedElement.style.cursor = 'grabbing';
+            
+            const svg = stage.querySelector('svg');
+            const rect = svg.getBoundingClientRect();
+            const scaleX = 400 / rect.width;
+            const scaleY = 711 / rect.height;
+            
+            dragStartX = (e.clientX - rect.left) * scaleX;
+            dragStartY = (e.clientY - rect.top) * scaleY;
+            initialTransform = selectedElement.getAttribute('transform') || '';
+            
+            window.addEventListener('mousemove', doDrag);
+            window.addEventListener('mouseup', stopDrag);
+        }
+
+        function doDrag(e) {
+            if (!selectedElement) return;
+            const svg = stage.querySelector('svg');
+            const rect = svg.getBoundingClientRect();
+            const scaleX = 400 / rect.width;
+            const scaleY = 711 / rect.height;
+            
+            const currentX = (e.clientX - rect.left) * scaleX;
+            const currentY = (e.clientY - rect.top) * scaleY;
+            
+            const dx = currentX - dragStartX;
+            const dy = currentY - dragStartY;
+            
+            // Простое смещение
+            selectedElement.setAttribute('transform', `${initialTransform} translate(${dx}, ${dy})`);
+        }
+
+        function stopDrag() {
+            if (selectedElement) {
+                selectedElement.style.cursor = 'pointer';
+                // Обновляем currentScene
+                const id = selectedElement.id;
+                if (id) {
+                    const el = currentScene.elements.find(e => e.id === id);
+                    if (el) el.transform = selectedElement.getAttribute('transform');
+                }
+            }
+            selectedElement = null;
+            window.removeEventListener('mousemove', doDrag);
+            window.removeEventListener('mouseup', stopDrag);
+        }
+
+        function resetSelection() {
+            selectedElement = null;
+            updateStatus("Выделение снято.");
+        }
+
+        // --- 4. Экспорт ---
+        function exportScene() {
+            // Собираем актуальное состояние из DOM
+            const svg = stage.querySelector('svg');
+            const elements = [];
+            
+            svg.querySelectorAll(':scope > *').forEach(el => {
+                const id = el.id;
+                const transform = el.getAttribute('transform') || '';
+                const svgString = new XMLSerializer().serializeToString(el);
+                
+                elements.push({
+                    id: id,
+                    type: 'svg',
+                    content: svgString,
+                    transform: transform
+                });
+            });
+            
+            const finalScene = { elements: elements };
+            const json = JSON.stringify(finalScene, null, 2);
+            
+            // Скачиваем
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'scene_final.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            updateStatus("Сцена экспортирована. Отправьте этот файл ИИ для анимации.");
+        }
+
+        function downloadPNG() {
+            const svg = stage.querySelector('svg');
+            if (!svg) return;
+            
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svg);
+            const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+            
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1080;
+                canvas.height = 1920;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 1080, 1920);
+                
+                canvas.toBlob(blob => {
+                    const pngUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = pngUrl;
+                    a.download = 'scene.png';
+                    a.click();
+                    URL.revokeObjectURL(pngUrl);
+                });
+                URL.revokeObjectURL(url);
+            };
+            img.src = url;
+            updateStatus("Рендеринг PNG...");
+        }
+
+        // --- 5. Анимация (Интерпретатор) ---
+        function loadAnimation() {
+            try {
+                const animData = JSON.parse(document.getElementById('anim-input').value);
+                currentAnimation = animData;
+                playAnimation(animData);
+            } catch (e) {
+                alert("Ошибка анимации: " + e.message);
+            }
+        }
+
+        function playAnimation(anim) {
+            stopAnimation();
+            updateStatus("Воспроизведение анимации...");
+            
+            const svg = stage.querySelector('svg');
+            const startTime = performance.now();
+            const duration = (anim.duration || 5) * 1000; // в мс
+            
+            function loop(now) {
+                if (!currentAnimation) return;
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Применяем анимации из JSON
+                if (anim.tracks) {
+                    anim.tracks.forEach(track => {
+                        const el = svg.getElementById(track.id);
+                        if (!el) return;
+                        
+                        // Ищем текущий и следующий keyframe
+                        const keyframes = track.keyframes;
+                        let currentKf = keyframes[0];
+                        let nextKf = keyframes[0];
+                        
+                        for (let i = 0; i < keyframes.length; i++) {
+                            if (keyframes[i].time <= elapsed) currentKf = keyframes[i];
+                            if (keyframes[i].time > elapsed) { nextKf = keyframes[i]; break; }
+                        }
+                        
+                        // Интерполяция (линейная)
+                        let t = 0;
+                        if (nextKf.time > currentKf.time) {
+                            t = (elapsed - currentKf.time) / (nextKf.time - currentKf.time);
+                        }
+                        
+                        // Применяем значения
+                        const props = ['x', 'y', 'rotate', 'scale', 'opacity'];
+                        let transform = '';
+                        
+                        if (currentKf.rotate !== undefined || nextKf.rotate !== undefined) {
+                            const r1 = currentKf.rotate || 0;
+                            const r2 = nextKf.rotate !== undefined ? nextKf.rotate : r1;
+                            const rot = r1 + (r2 - r1) * t;
+                            transform += `rotate(${rot}) `;
+                        }
+                        if (currentKf.x !== undefined || nextKf.x !== undefined) {
+                            const x1 = currentKf.x || 0;
+                            const x2 = nextKf.x !== undefined ? nextKf.x : x1;
+                            const x = x1 + (x2 - x1) * t;
+                            transform += `translateX(${x}) `;
+                        }
+                        if (currentKf.y !== undefined || nextKf.y !== undefined) {
+                            const y1 = currentKf.y || 0;
+                            const y2 = nextKf.y !== undefined ? nextKf.y : y1;
+                            const y = y1 + (y2 - y1) * t;
+                            transform += `translateY(${y}) `;
+                        }
+                        
+                        if (transform) el.setAttribute('transform', transform);
+                        
+                        if (currentKf.opacity !== undefined || nextKf.opacity !== undefined) {
+                            const o1 = currentKf.opacity !== undefined ? currentKf.opacity : 1;
+                            const o2 = nextKf.opacity !== undefined ? nextKf.opacity : o1;
+                            el.setAttribute('opacity', o1 + (o2 - o1) * t);
+                        }
+                    });
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(loop);
+                } else {
+                    currentAnimation = null;
+                    updateStatus("Анимация завершена.");
+                }
+            }
+            requestAnimationFrame(loop);
+        }
+
+        function stopAnimation() {
+            currentAnimation = null;
+            // Сброс трансформаций (упрощенно)
+            const svg = stage.querySelector('svg');
+            if (svg) {
+                // Просто перерисовываем сцену из исходного состояния
+                renderScene();
+            }
+            updateStatus("Анимация остановлена.");
+        }
+    </script>
+</body>
+</html>
