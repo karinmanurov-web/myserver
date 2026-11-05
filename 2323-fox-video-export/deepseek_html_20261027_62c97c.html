@@ -231,11 +231,7 @@
     </style>
 </head>
 <body>
-<div id="modulePasswordGate" style="position:fixed;inset:0;z-index:100000;background:#eee8dc;display:grid;place-items:center;padding:24px;font-family:Arial,sans-serif;color:#34312c">
-<form id="modulePasswordForm" style="width:min(100%,340px);padding:32px;background:#f8f5ee;border:1px solid #d9d0c2;display:grid;gap:14px">
-<div style="font-size:28px;color:#9b7655">✳</div><small style="letter-spacing:.14em">THE CREATIVE LAB</small><h2 style="font-family:Georgia,serif;font-size:32px;font-weight:normal;margin:0">Welcome back.</h2><p style="font-size:13px;color:#777">Enter the studio password to continue.</p><input id="modulePassword" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PASSWORD" required style="padding:13px;border:1px solid #d8cfc1;background:#fffdf8;font-size:16px;letter-spacing:.2em"><button style="padding:13px;background:#34312c;color:white;border:0;cursor:pointer">ENTER THE LAB ↗</button><span id="modulePasswordError" style="font-size:12px;color:#a34c3e"></span>
-</form></div>
-<a class="lab-back-link" href="../" aria-label="Back to The Creative Lab">← BACK TO LAB</a>
+<a class="lab-back-link" href="../" aria-label="Back to The Creative Lab" style="position:fixed;top:16px;left:16px;z-index:99999;display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border:1px solid rgba(120,110,95,.4);border-radius:4px;background:rgba(250,247,240,.96);color:#39352f;text-decoration:none;font:11px monospace;letter-spacing:.08em;box-shadow:0 4px 18px #0002;backdrop-filter:blur(8px)">← BACK TO LAB</a>
 
     <div class="svg-container" id="fox-container">
         <!-- Embedded fox SVG: keep the artwork and layer IDs intact. -->
@@ -1001,8 +997,5 @@
     <script src="video-export.js" defer></script>
     <!-- Keep the existing SVG artwork and all its IDs unchanged. -->
 
-<script>
-(()=>{const gate=document.getElementById("modulePasswordGate");if(sessionStorage.getItem("creativeLabAccess")==="granted"){gate.remove();return;}document.getElementById("modulePasswordForm").addEventListener("submit",e=>{e.preventDefault();if(document.getElementById("modulePassword").value==="23232323"){sessionStorage.setItem("creativeLabAccess","granted");gate.remove();}else{document.getElementById("modulePasswordError").textContent="Password doesn't match. Try again.";document.getElementById("modulePassword").select();}});})();
-</script>
 </body>
 </html>
