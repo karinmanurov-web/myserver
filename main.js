@@ -172,7 +172,7 @@ $("#clearNotes").addEventListener("click", () => {
 });
 
 // Module registry: add future applications by editing data/modules.json.
-const categoryNames = {motion:"MOTION",visual:"VISUAL",director:"DIRECTOR'S",world:"WORLDS"};
+const categoryNames = {motion:"MOTION",visual:"VISUAL",director:"DIRECTOR'S",world:"WORLDS",workshop:"WORKSHOP"};
 async function loadModules() {
   const grid = $("#appsGrid");
   try {
