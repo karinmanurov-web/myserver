@@ -97,5 +97,41 @@
     "description": "Experiment with car photo color grading and cinematic looks.",
     "status": "AVAILABLE",
     "path": "./filters.html"
+  },
+  {
+    "id": "project-tracker",
+    "name": "Project Tracker",
+    "category": "workshop",
+    "icon": "▤",
+    "description": "Keep creative projects, stages and small tasks in one calm workspace.",
+    "status": "AVAILABLE",
+    "path": "./creative-workshop/project-tracker.html"
+  },
+  {
+    "id": "storyboard-builder",
+    "name": "Storyboard Builder",
+    "category": "workshop",
+    "icon": "▧",
+    "description": "Build a shot-by-shot sequence, arrange frames and print your storyboard.",
+    "status": "AVAILABLE",
+    "path": "./creative-workshop/storyboard-builder.html"
+  },
+  {
+    "id": "shot-generator",
+    "name": "Shot Generator",
+    "category": "workshop",
+    "icon": "◉",
+    "description": "Generate camera angles, movement, lighting and visual ideas for your next shoot.",
+    "status": "AVAILABLE",
+    "path": "./creative-workshop/shot-generator.html"
+  },
+  {
+    "id": "random-creative-challenge",
+    "name": "Random Creative Challenge",
+    "category": "workshop",
+    "icon": "✳",
+    "description": "Draw a creative prompt for photography, video, illustration, design, writing or languages.",
+    "status": "AVAILABLE",
+    "path": "./creative-workshop/random-challenge.html"
   }
 ]
