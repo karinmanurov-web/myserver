@@ -1,3 +1,19 @@
+// Client-side password gate: convenient privacy screen, not server-enforced security.
+const LAB_PASSWORD = "23232323";
+const passwordScreen = document.querySelector("#passwordScreen");
+const passwordForm = document.querySelector("#passwordForm");
+if (sessionStorage.getItem("creativeLabAccess") === "granted") passwordScreen.hidden = true;
+passwordForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const value = document.querySelector("#labPassword").value;
+  if (value === LAB_PASSWORD) {
+    sessionStorage.setItem("creativeLabAccess", "granted");
+    passwordScreen.hidden = true;
+  } else {
+    document.querySelector("#passwordError").textContent = "That password doesn't match. Try again.";
+    document.querySelector("#labPassword").select();
+  }
+});
 const $ = (selector) => document.querySelector(selector);
 
 const inspirations = [
