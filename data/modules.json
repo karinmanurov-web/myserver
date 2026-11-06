@@ -133,5 +133,14 @@
     "description": "Draw a creative prompt for photography, video, illustration, design, writing or languages.",
     "status": "AVAILABLE",
     "path": "./creative-workshop/random-challenge.html"
+  },
+  {
+    "id": "vocabulary-room",
+    "name": "Vocabulary Room",
+    "category": "workshop",
+    "icon": "Աբ",
+    "description": "Learn Armenian vocabulary in ten-word batches with multiple-choice tests, written recall and adaptive mistake reviews.",
+    "status": "AVAILABLE",
+    "path": "./vocabulary-trainer.html"
   }
 ]
