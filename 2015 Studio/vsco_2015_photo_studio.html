@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSCO '15 CAM — Винтажная фотостудия 2012–2016</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & VT323 for Retro Date Stamp -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        digital: ['VT323', 'monospace'],
+                    },
+                    colors: {
+                        vsco: {
+                            black: '#121212',
+                            panel: '#1e1e1e',
+                            border: '#2a2a2a',
+                            accent: '#f59e0b',
+                            gold: '#fbbf24'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f0f11;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Custom Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 2px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #f59e0b;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -6px;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+            transition: transform 0.1s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Custom Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 22px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #334155;
+            transition: .3s;
+            border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #f59e0b;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Tab active highlight */
+        .tab-btn.active {
+            color: #f59e0b;
+            border-bottom: 2px solid #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+        .preset-card.active {
+            border-color: #f59e0b;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Canvas Wrapper styling */
+        .canvas-container {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            background-image: radial-gradient(#262626 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Application Header -->
+    <header class="bg-vsco-panel border-b border-vsco-border px-4 py-3 flex items-center justify-between z-20">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 bg-amber-500 rounded-lg flex items-center justify-center text-vsco-black font-black text-xl shadow-lg shadow-amber-500/20">
+                V
+            </div>
+            <div>
+                <h1 class="font-extrabold text-base tracking-tight text-white flex items-center gap-2">
+                    VSCO '15 STUDIO <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded font-mono">v4.2 ARCHIVE</span>
+                </h1>
+                <p class="text-[11px] text-slate-400">Винтажная обработка фото • 2012–2016 Эпоха</p>
+            </div>
+        </div>
+
+        <!-- Right Quick Action Bar -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <!-- Sample Selector -->
+            <div class="relative hidden sm:block">
+                <select id="sampleSelect" onchange="loadSamplePhoto(this.value)" class="bg-vsco-black border border-vsco-border text-slate-300 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-500">
+                    <option value="" disabled selected>выберите пример фото</option>
+                    <option value="https://images.unsplash.com/photo-1513326718677-b964603b136d?q=80&w=1000">🌆 Москва Парк Горького</option>
+                    <option value="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=1000">☕ Кофе и Авокадо-тост</option>
+                    <option value="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=1000">👟 Streetwear & OOTD</option>
+                    <option value="https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000">🍸 Неоновый Бар 2015</option>
+                </select>
+            </div>
+
+            <!-- Upload Custom Photo -->
+            <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-3 py-1.5 rounded-lg cursor-pointer transition flex items-center gap-1.5 font-medium">
+                <i class="fa-solid fa-folder-open text-amber-400"></i>
+                <span class="hidden sm:inline">Открыть фото</span>
+                <input type="file" id="imageUpload" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+            </label>
+
+            <!-- Reset Filters -->
+            <button onclick="resetAllFilters()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                <i class="fa-solid fa-rotate-left text-xs"></i>
+                <span class="hidden md:inline">Сброс</span>
+            </button>
+
+            <!-- Export / Download Button -->
+            <button onclick="downloadImage()" class="bg-amber-500 hover:bg-amber-400 text-vsco-black font-bold text-xs px-4 py-1.5 rounded-lg shadow-lg shadow-amber-500/20 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-download"></i>
+                <span>Сохранить</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Area -->
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden relative">
+        
+        <!-- CENTER / LEFT: CANVAS PREVIEW AREA (8 cols on desktop) -->
+        <div class="lg:col-span-8 xl:col-span-9 bg-vsco-black p-4 flex flex-col items-center justify-center relative min-h-[420px] sm:min-h-[500px]">
+            
+            <!-- Canvas Container -->
+            <div class="canvas-container relative rounded-xl overflow-hidden border border-vsco-border max-w-full max-h-[75vh] flex items-center justify-center p-2">
+                <canvas id="photoCanvas" class="max-w-full max-h-[70vh] object-contain rounded shadow-2xl transition-all duration-75"></canvas>
+                
+                <!-- Loading Overlay -->
+                <div id="loadingSpinner" class="absolute inset-0 bg-vsco-black/80 backdrop-blur-sm hidden flex flex-col items-center justify-center space-y-2 z-10">
+                    <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-3xl"></i>
+                    <span class="text-xs text-slate-300 font-mono uppercase tracking-wider">Применение зернистости...</span>
+                </div>
+            </div>
+
+            <!-- Canvas Top Floating Controls (Compare & Zoom) -->
+            <div class="absolute top-6 left-6 flex items-center space-x-2">
+                <button id="compareBtn" onmousedown="startCompare()" onmouseup="stopCompare()" onmouseleave="stopCompare()" ontouchstart="startCompare()" ontouchend="stopCompare()"
+                    class="bg-vsco-panel/90 backdrop-blur border border-vsco-border hover:bg-slate-800 text-xs px-3 py-1.5 rounded-lg text-slate-300 transition flex items-center gap-1.5 shadow-lg">
+                    <i class="fa-solid fa-eye text-amber-400"></i>
+                    <span>Удерживайте для До/После</span>
+                </button>
+            </div>
+
+            <!-- Canvas Floating Tag -->
+            <div class="absolute bottom-6 left-6 bg-vsco-panel/90 backdrop-blur border border-vsco-border text-xs px-3 py-1.5 rounded-lg text-slate-300 font-mono shadow-lg flex items-center space-x-3">
+                <span id="activePresetTag" class="text-amber-400 font-bold">PRESET: C1 / CHROMATIC</span>
+                <span id="resolutionTag" class="text-slate-500 text-[10px]">1920x1080</span>
+            </div>
+        </div>
+
+        <!-- RIGHT: CONTROL & FILTER PANEL (4 cols on desktop) -->
+        <div class="lg:col-span-4 xl:col-span-3 bg-vsco-panel border-l border-vsco-border flex flex-col h-full max-h-[85vh] lg:max-h-none overflow-y-auto">
+            
+            <!-- Navigation Tabs -->
+            <div class="flex border-b border-vsco-border text-xs font-medium text-slate-400 bg-vsco-black/40 sticky top-0 z-10">
+                <button onclick="switchTab('presets')" id="tab-presets" class="tab-btn active flex-1 py-3 text-center transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Пресеты</span>
+                </button>
+                <button onclick="switchTab('adjust')" id="tab-adjust" class="tab-btn flex-1 py-3 text-center transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Бегунки</span>
+                </button>
+                <button onclick="switchTab('effects')" id="tab-effects" class="tab-btn flex-1 py-3 text-center transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-film"></i>
+                    <span>Зерно & Эффекты</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: PRESETS GALLERY -->
+            <div id="content-presets" class="p-4 space-y-4">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Коллекция хитов 2012-2016</span>
+                    <span class="text-amber-400 font-mono text-[10px]">8 Фильтров</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <!-- Preset Card 1: C1 -->
+                    <button onclick="applyPreset('C1')" id="preset-C1" class="preset-card active p-2.5 rounded-xl bg-vsco-black border border-vsco-border hover:border-amber-500/50 text-left transition relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-extrabold text-amber-400 text-xs">C1</span>
+                            <span class="text-[9px] bg-amber-500/10 text-amber-300 px-1 rounded">Chromatic</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 leading-tight">Культовый теплый фильтр Парка Горького</div>
+                    </button>
+
+                    <!-- Preset Card 2: HB2 -->
+                    <button onclick="applyPreset('HB2')" id="preset-HB2" class="preset-card p-2.5 rounded-xl bg-vsco-black border border-vsco-border hover:border-amber-500/50 text-left transition relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-extrabold text-sky-400 text-xs">HB2</span>
+                            <span class="text-[9px] bg-sky-500/10 text-sky-300 px-1 rounded">Hypebeast</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 leading-tight">Контрастный синеватый стритстайл</div>
+                    </button>
+
+                    <!-- Preset Card 3: A6 -->
+                    <button onclick="applyPreset('A6')" id="preset-A6" class="preset-card p-2.5 rounded-xl bg-vsco-black border border-vsco-border hover:border-amber-500/50 text-left transition relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-extrabold text-emerald-400 text-xs">A6</span>
+                            <span class="text-[9px] bg-emerald-500/10 text-emerald-300 px-1 rounded">Analog</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 leading-tight">Мягкая аналоговая пленка и пастель</div>
+                    </button>
+
+                    <!-- Preset Card 4: F2 -->
+                    <button onclick="applyPreset('F2')" id="preset-F2" class="preset-card p-2.5 rounded-xl bg-vsco-black border border-vsco-border hover:border-amber-500/50 text-left transition relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-extrabold text-rose-400 text-xs">F2</span>
+                            <span class="text-[9px] bg-rose-500/10 text-rose-300 px-1 rounded">Mellow</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 leading-tight">Засвеченный образ для фото еды и кофе</div>
+                    </button>
+
+                    <!-- Preset Card 5: LOFI -->
+                    <button onclick="applyPreset('LOFI')" id="preset-LOFI" class="preset-card p-2.5 rounded-xl bg-vsco-black border border-vsco-border hover:border-amber-500/50 text-left transition relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-extrabold text-purple-400 text-xs">Insta Lo-Fi</span>
+                            <span class="text-[9px] bg-purple-500/10 text-purple-300 px-1 rounded">2012 Classic</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 leading-tight">Жгучий контраст и ядовитые цвета</div>
+                    </button>
+
+                    <!-- Preset Card 6: VALENCIA -->
+                    <button onclick="applyPreset('VALENCIA')" id="preset-VALENCIA" class="preset-card p-2.5 rounded-xl bg-vsco-black border border-vsco-border hover:border-amber-500/50 text-left transition relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-extrabold text-yellow-400 text-xs">Valencia</span>
+                            <span class="text-[9px] bg-yellow-500/10 text-yellow-300 px-1 rounded">Warm Retro</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 leading-tight">Теплая золотая винтажная дымка</div>
+                    </button>
+
+                    <!-- Preset Card 7: B1 -->
+                    <button onclick="applyPreset('B1')" id="preset-B1" class="preset-card p-2.5 rounded-xl bg-vsco-black border border-vsco-border hover:border-amber-500/50 text-left transition relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-extrabold text-slate-200 text-xs">B1</span>
+                            <span class="text-[9px] bg-slate-500/20 text-slate-300 px-1 rounded">B&W Classic</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 leading-tight">Глубокий черно-белый эстет</div>
+                    </button>
+
+                    <!-- Preset Card 8: T1 -->
+                    <button onclick="applyPreset('T1')" id="preset-T1" class="preset-card p-2.5 rounded-xl bg-vsco-black border border-vsco-border hover:border-amber-500/50 text-left transition relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-extrabold text-amber-500 text-xs">T1</span>
+                            <span class="text-[9px] bg-amber-500/10 text-amber-300 px-1 rounded">Moody Gold</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 leading-tight">Кинематографичный закат</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 2: ADJUSTMENT SLIDERS -->
+            <div id="content-adjust" class="p-4 space-y-4 hidden">
+                <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Базовые настройки изображения</div>
+
+                <!-- Exposure Slider -->
+                <div class="space-y-1 bg-vsco-black p-3 rounded-xl border border-vsco-border">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-300 font-medium"><i class="fa-solid fa-sun text-amber-400 mr-1.5"></i> Экспозиция</span>
+                        <span id="val-exposure" class="font-mono text-amber-400">0</span>
+                    </div>
+                    <input type="range" id="slider-exposure" min="-50" max="50" value="0" oninput="updateFilterParams()">
+                </div>
+
+                <!-- Contrast Slider -->
+                <div class="space-y-1 bg-vsco-black p-3 rounded-xl border border-vsco-border">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-300 font-medium"><i class="fa-solid fa-circle-half-stroke text-amber-400 mr-1.5"></i> Контрастность</span>
+                        <span id="val-contrast" class="font-mono text-amber-400">0</span>
+                    </div>
+                    <input type="range" id="slider-contrast" min="-50" max="50" value="0" oninput="updateFilterParams()">
+                </div>
+
+                <!-- Saturation Slider -->
+                <div class="space-y-1 bg-vsco-black p-3 rounded-xl border border-vsco-border">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-300 font-medium"><i class="fa-solid fa-droplet text-amber-400 mr-1.5"></i> Насыщенность</span>
+                        <span id="val-saturation" class="font-mono text-amber-400">0</span>
+                    </div>
+                    <input type="range" id="slider-saturation" min="-50" max="50" value="0" oninput="updateFilterParams()">
+                </div>
+
+                <!-- Warmth / Temperature Slider -->
+                <div class="space-y-1 bg-vsco-black p-3 rounded-xl border border-vsco-border">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-300 font-medium"><i class="fa-solid fa-temperature-three-quarters text-amber-400 mr-1.5"></i> Теплота (Тон)</span>
+                        <span id="val-warmth" class="font-mono text-amber-400">0</span>
+                    </div>
+                    <input type="range" id="slider-warmth" min="-50" max="50" value="0" oninput="updateFilterParams()">
+                </div>
+
+                <!-- Fade / Matte Shadows Slider -->
+                <div class="space-y-1 bg-vsco-black p-3 rounded-xl border border-vsco-border">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-300 font-medium"><i class="fa-solid fa-cloud text-amber-400 mr-1.5"></i> Выцветание (Fade)</span>
+                        <span id="val-fade" class="font-mono text-amber-400">15</span>
+                    </div>
+                    <input type="range" id="slider-fade" min="0" max="60" value="15" oninput="updateFilterParams()">
+                </div>
+
+                <!-- Vignette Slider -->
+                <div class="space-y-1 bg-vsco-black p-3 rounded-xl border border-vsco-border">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-300 font-medium"><i class="fa-solid fa-circle text-amber-400 mr-1.5"></i> Виньетка (Затемнение)</span>
+                        <span id="val-vignette" class="font-mono text-amber-400">20</span>
+                    </div>
+                    <input type="range" id="slider-vignette" min="0" max="80" value="20" oninput="updateFilterParams()">
+                </div>
+            </div>
+
+            <!-- TAB 3: FILM GRAIN & RETRO EFFECTS -->
+            <div id="content-effects" class="p-4 space-y-4 hidden">
+                <div class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Пленочная текстура и атрибуты 2015 года</div>
+
+                <!-- MAIN FEATURE: GRAIN SLIDER (ЗЕРНИСТОСТЬ) -->
+                <div class="space-y-2 bg-gradient-to-br from-vsco-black to-slate-900 p-4 rounded-xl border border-amber-500/30 shadow-lg">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-amber-400 font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-cubes-stacked text-base"></i>
+                            <span>Зернистость пленки (Grain)</span>
+                        </span>
+                        <span id="val-grain" class="font-mono font-bold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">25%</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 leading-snug">
+                        Создает подлинную процедурную текстуру ISO 800/1600 пленочного кадра 35мм.
+                    </p>
+                    <input type="range" id="slider-grain" min="0" max="80" value="25" oninput="updateFilterParams()">
+                </div>
+
+                <!-- TOGGLE 1: Retro Camera Date Stamp -->
+                <div class="flex items-center justify-between bg-vsco-black p-3.5 rounded-xl border border-vsco-border">
+                    <div class="space-y-0.5">
+                        <div class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-calendar-day text-amber-400"></i>
+                            <span>Штамп даты мыльницы</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400">Оранжевые цифры '<span class="font-mono text-amber-400">'15 08 24</span> в углу</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-datestamp" checked onchange="updateFilterParams()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- TOGGLE 2: Vintage Light Leak (Засветка) -->
+                <div class="flex items-center justify-between bg-vsco-black p-3.5 rounded-xl border border-vsco-border">
+                    <div class="space-y-0.5">
+                        <div class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt text-amber-400"></i>
+                            <span>Боковой засвет (Light Leak)</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400">Теплый солнечный блик с краю фото</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-lightleak" checked onchange="updateFilterParams()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- TOGGLE 3: Dust & Scratch Texture -->
+                <div class="flex items-center justify-between bg-vsco-black p-3.5 rounded-xl border border-vsco-border">
+                    <div class="space-y-0.5">
+                        <div class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-rug text-amber-400"></i>
+                            <span>Пылинки и царапины</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400">Микротекстура старого негатива</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-dust" onchange="updateFilterParams()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Presets Quick Ribbon (For mobile / quick switching) -->
+    <footer class="bg-vsco-black border-t border-vsco-border p-2 z-20">
+        <div class="flex items-center space-x-2 overflow-x-auto pb-1 max-w-7xl mx-auto">
+            <span class="text-[10px] uppercase font-mono text-slate-500 px-2 hidden sm:inline">Быстрый пресет:</span>
+            <button onclick="applyPreset('C1')" class="px-3 py-1 bg-vsco-panel hover:bg-slate-800 border border-vsco-border rounded-lg text-xs font-mono text-amber-400 whitespace-nowrap">C1 Chromatic</button>
+            <button onclick="applyPreset('HB2')" class="px-3 py-1 bg-vsco-panel hover:bg-slate-800 border border-vsco-border rounded-lg text-xs font-mono text-sky-400 whitespace-nowrap">HB2 Hypebeast</button>
+            <button onclick="applyPreset('A6')" class="px-3 py-1 bg-vsco-panel hover:bg-slate-800 border border-vsco-border rounded-lg text-xs font-mono text-emerald-400 whitespace-nowrap">A6 Analog</button>
+            <button onclick="applyPreset('F2')" class="px-3 py-1 bg-vsco-panel hover:bg-slate-800 border border-vsco-border rounded-lg text-xs font-mono text-rose-400 whitespace-nowrap">F2 Mellow</button>
+            <button onclick="applyPreset('LOFI')" class="px-3 py-1 bg-vsco-panel hover:bg-slate-800 border border-vsco-border rounded-lg text-xs font-mono text-purple-400 whitespace-nowrap">Insta Lo-Fi</button>
+            <button onclick="applyPreset('VALENCIA')" class="px-3 py-1 bg-vsco-panel hover:bg-slate-800 border border-vsco-border rounded-lg text-xs font-mono text-yellow-400 whitespace-nowrap">Valencia</button>
+            <button onclick="applyPreset('B1')" class="px-3 py-1 bg-vsco-panel hover:bg-slate-800 border border-vsco-border rounded-lg text-xs font-mono text-slate-300 whitespace-nowrap">B1 Black&White</button>
+            <button onclick="applyPreset('T1')" class="px-3 py-1 bg-vsco-panel hover:bg-slate-800 border border-vsco-border rounded-lg text-xs font-mono text-amber-500 whitespace-nowrap">T1 Moody Gold</button>
+        </div>
+    </footer>
+
+    <script>
+        /* ===================================================
+           STATE MANAGEMENT & PRESETS CONFIGURATION
+           =================================================== */
+        const canvas = document.getElementById('photoCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let originalImage = new Image();
+        let isImageLoaded = false;
+        let isComparing = false;
+        let renderDebounceTimer = null;
+
+        // Current Active Filter Settings
+        let currentPreset = 'C1';
+        let settings = {
+            exposure: 0,
+            contrast: 0,
+            saturation: 0,
+            warmth: 0,
+            fade: 15,
+            vignette: 20,
+            grain: 25,
+            datestamp: true,
+            lightleak: true,
+            dust: false
+        };
+
+        // Preset Definitions (2012-2016 Retro Formulas)
+        const PRESETS = {
+            'C1': { name: 'C1 / CHROMATIC', exp: 5, contrast: 8, sat: -10, warmth: 12, fade: 15, grain: 25, leak: true },
+            'HB2': { name: 'HB2 / HYPEBEAST', exp: -5, contrast: 25, sat: -25, warmth: -15, fade: 10, grain: 30, leak: false },
+            'A6': { name: 'A6 / ANALOG', exp: 2, contrast: -5, sat: -5, warmth: 8, fade: 25, grain: 20, leak: false },
+            'F2': { name: 'F2 / MELLOW', exp: 12, contrast: -10, sat: -15, warmth: 5, fade: 30, grain: 18, leak: true },
+            'LOFI': { name: 'INSTA LO-FI 2012', exp: -2, contrast: 40, sat: 35, warmth: 0, fade: 0, grain: 15, leak: false },
+            'VALENCIA': { name: 'VALENCIA RETRO', exp: 8, contrast: -10, sat: 10, warmth: 25, fade: 20, grain: 22, leak: true },
+            'B1': { name: 'B1 / B&W CLASSIC', exp: 0, contrast: 30, sat: -100, warmth: 0, fade: 15, grain: 40, leak: false },
+            'T1': { name: 'T1 / MOODY GOLD', exp: -8, contrast: 15, sat: -15, warmth: 30, fade: 18, grain: 32, leak: true }
+        };
+
+        /* ===================================================
+           INITIALIZATION & IMAGE LOADING
+           =================================================== */
+        window.onload = function() {
+            // Load default sample image on start
+            loadSamplePhoto('https://images.unsplash.com/photo-1513326718677-b964603b136d?q=80&w=1000');
+        };
+
+        function loadSamplePhoto(url) {
+            showLoading(true);
+            originalImage = new Image();
+            originalImage.crossOrigin = "anonymous";
+            originalImage.onload = function() {
+                initCanvasDimensions();
+                renderPipeline();
+                showLoading(false);
+            };
+            originalImage.onerror = function() {
+                // Fallback placeholder image if network fails
+                originalImage.src = 'https://placehold.co/1000x667/1e293b/ffffff?text=Moscow+2015+Sample';
+            };
+            originalImage.src = url;
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                showLoading(true);
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    originalImage = new Image();
+                    originalImage.onload = function() {
+                        initCanvasDimensions();
+                        renderPipeline();
+                        showLoading(false);
+                    };
+                    originalImage.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function initCanvasDimensions() {
+            canvas.width = originalImage.naturalWidth || 1200;
+            canvas.height = originalImage.naturalHeight || 800;
+            isImageLoaded = true;
+            document.getElementById('resolutionTag').innerText = `${canvas.width}x${canvas.height}`;
+        }
+
+        /* ===================================================
+           MAIN RENDER PIPELINE (CANVAS FILTERS + GRAIN PASS)
+           =================================================== */
+        function renderPipeline() {
+            if (!isImageLoaded) return;
+
+            // If user is holding 'Compare', draw raw original photo
+            if (isComparing) {
+                ctx.filter = 'none';
+                ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+                return;
+            }
+
+            // 1. Calculate CSS Filter String
+            const expVal = 1 + (settings.exposure / 100);
+            const contrastVal = 1 + (settings.contrast / 100);
+            const satVal = 1 + (settings.saturation / 100);
+            const hueVal = settings.warmth * 0.4; // subtle hue shift for temperature
+
+            let filterString = `brightness(${expVal}) contrast(${contrastVal}) saturate(${satVal})`;
+            if (hueVal !== 0) {
+                filterString += ` hue-rotate(${hueVal}deg)`;
+            }
+
+            // Apply primary color filter pass
+            ctx.filter = filterString;
+            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+            ctx.filter = 'none'; // Reset filter context for post-effects
+
+            // 2. Apply Warmth Overlay Pass
+            if (settings.warmth !== 0) {
+                ctx.save();
+                ctx.globalCompositeOperation = settings.warmth > 0 ? 'overlay' : 'color-burn';
+                ctx.fillStyle = settings.warmth > 0 ? `rgba(245, 158, 11, ${Math.abs(settings.warmth) * 0.003})` : `rgba(59, 130, 246, ${Math.abs(settings.warmth) * 0.003})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            }
+
+            // 3. Apply Matte / Fade (Faded Shadows Pass)
+            if (settings.fade > 0) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                ctx.fillStyle = `rgba(255, 255, 255, ${settings.fade * 0.0035})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            }
+
+            // 4. Apply Vignette Effect
+            if (settings.vignette > 0) {
+                applyVignette(settings.vignette);
+            }
+
+            // 5. Apply Light Leak Effect
+            if (settings.lightleak) {
+                applyLightLeak();
+            }
+
+            // 6. Apply Procedural Film Grain (ЗЕРНИСТОСТЬ)
+            if (settings.grain > 0) {
+                applyFilmGrain(settings.grain);
+            }
+
+            // 7. Apply Dust & Scratches
+            if (settings.dust) {
+                applyDustAndScratches();
+            }
+
+            // 8. Apply Retro Date Stamp ('15 08 24)
+            if (settings.datestamp) {
+                drawDateStamp();
+            }
+        }
+
+        /* ===================================================
+           SPECIAL EFFECTS ALGORITHMS (GRAIN, VIGNETTE, DATE)
+           =================================================== */
+
+        // PROCEDURAL FILM GRAIN GENERATOR
+        function applyFilmGrain(intensity) {
+            const w = canvas.width;
+            const h = canvas.height;
+            const imgData = ctx.getImageData(0, 0, w, h);
+            const data = imgData.data;
+
+            // Scale grain intensity factor
+            const factor = intensity * 0.65;
+
+            // Iterate over pixel matrix with stride optimization
+            for (let i = 0; i < data.length; i += 4) {
+                // Generate Gaussian-like random noise
+                const noise = (Math.random() - 0.5) * factor * 2.2;
+                
+                // Add noise to RGB channels
+                data[i]     = Math.min(255, Math.max(0, data[i] + noise));
+                data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise));
+                data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise));
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        // VIGNETTE EFFECT
+        function applyVignette(amount) {
+            const w = canvas.width;
+            const h = canvas.height;
+            const radius = Math.max(w, h) * 0.75;
+
+            const gradient = ctx.createRadialGradient(w / 2, h / 2, radius * 0.3, w / 2, h / 2, radius);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+            gradient.addColorStop(1, `rgba(0, 0, 0, ${amount * 0.012})`);
+
+            ctx.save();
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, w, h);
+            ctx.restore();
+        }
+
+        // LIGHT LEAK EFFECT
+        function applyLightLeak() {
+            const w = canvas.width;
+            const h = canvas.height;
+
+            const gradient = ctx.createRadialGradient(w * 0.9, h * 0.1, 10, w * 0.8, h * 0.2, w * 0.6);
+            gradient.addColorStop(0, 'rgba(251, 146, 60, 0.45)');
+            gradient.addColorStop(0.4, 'rgba(244, 63, 94, 0.25)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, w, h);
+            ctx.restore();
+        }
+
+        // DUST AND SCRATCHES
+        function applyDustAndScratches() {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            const count = Math.floor((canvas.width * canvas.height) / 80000);
+
+            for (let i = 0; i < count; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const r = Math.random() * 1.5;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        // RETRO CAMERA DATE STAMP ('15 08 24)
+        function drawDateStamp() {
+            const fontSize = Math.max(18, Math.floor(canvas.width * 0.032));
+            ctx.save();
+            ctx.font = `${fontSize}px 'VT323', monospace`;
+            ctx.fillStyle = '#f97316'; // Classic bright orange date stamp color
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+
+            const dateText = "'15 08 24"; // Vintage 2015 timestamp format
+            const padding = fontSize * 1.2;
+            
+            ctx.fillText(dateText, canvas.width - (fontSize * 5.2) - padding, canvas.height - padding);
+            ctx.restore();
+        }
+
+
+        /* ===================================================
+           UI INTERACTION & CONTROLS
+           =================================================== */
+
+        function switchTab(tabName) {
+            // Update Tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // Toggle Tab contents
+            document.getElementById('content-presets').classList.add('hidden');
+            document.getElementById('content-adjust').classList.add('hidden');
+            document.getElementById('content-effects').classList.add('hidden');
+
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+        }
+
+        function applyPreset(presetKey) {
+            const p = PRESETS[presetKey];
+            if (!p) return;
+
+            currentPreset = presetKey;
+            
+            // Highlight active preset card
+            document.querySelectorAll('.preset-card').forEach(card => card.classList.remove('active'));
+            const activeCard = document.getElementById(`preset-${presetKey}`);
+            if (activeCard) activeCard.classList.add('active');
+
+            document.getElementById('activePresetTag').innerText = `PRESET: ${p.name}`;
+
+            // Apply Preset Values to Controls & State
+            settings.exposure = p.exp;
+            settings.contrast = p.contrast;
+            settings.saturation = p.sat;
+            settings.warmth = p.warmth;
+            settings.fade = p.fade;
+            settings.grain = p.grain;
+            settings.lightleak = p.leak;
+
+            // Sync Slider UI Elements
+            syncSlidersUI();
+
+            // Trigger re-render
+            triggerRender();
+        }
+
+        function updateFilterParams() {
+            // Read from Sliders
+            settings.exposure = parseInt(document.getElementById('slider-exposure').value);
+            settings.contrast = parseInt(document.getElementById('slider-contrast').value);
+            settings.saturation = parseInt(document.getElementById('slider-saturation').value);
+            settings.warmth = parseInt(document.getElementById('slider-warmth').value);
+            settings.fade = parseInt(document.getElementById('slider-fade').value);
+            settings.vignette = parseInt(document.getElementById('slider-vignette').value);
+            settings.grain = parseInt(document.getElementById('slider-grain').value);
+
+            // Read from Toggles
+            settings.datestamp = document.getElementById('toggle-datestamp').checked;
+            settings.lightleak = document.getElementById('toggle-lightleak').checked;
+            settings.dust = document.getElementById('toggle-dust').checked;
+
+            // Update Value Labels
+            document.getElementById('val-exposure').innerText = settings.exposure;
+            document.getElementById('val-contrast').innerText = settings.contrast;
+            document.getElementById('val-saturation').innerText = settings.saturation;
+            document.getElementById('val-warmth').innerText = settings.warmth;
+            document.getElementById('val-fade').innerText = settings.fade;
+            document.getElementById('val-vignette').innerText = settings.vignette;
+            document.getElementById('val-grain').innerText = settings.grain + '%';
+
+            document.getElementById('activePresetTag').innerText = `CUSTOM / ${currentPreset}`;
+
+            triggerRender();
+        }
+
+        function syncSlidersUI() {
+            document.getElementById('slider-exposure').value = settings.exposure;
+            document.getElementById('slider-contrast').value = settings.contrast;
+            document.getElementById('slider-saturation').value = settings.saturation;
+            document.getElementById('slider-warmth').value = settings.warmth;
+            document.getElementById('slider-fade').value = settings.fade;
+            document.getElementById('slider-grain').value = settings.grain;
+            document.getElementById('toggle-lightleak').checked = settings.lightleak;
+
+            document.getElementById('val-exposure').innerText = settings.exposure;
+            document.getElementById('val-contrast').innerText = settings.contrast;
+            document.getElementById('val-saturation').innerText = settings.saturation;
+            document.getElementById('val-warmth').innerText = settings.warmth;
+            document.getElementById('val-fade').innerText = settings.fade;
+            document.getElementById('val-grain').innerText = settings.grain + '%';
+        }
+
+        function triggerRender() {
+            // Debounce pixel grain rendering for smooth dragging
+            clearTimeout(renderDebounceTimer);
+            renderDebounceTimer = setTimeout(() => {
+                renderPipeline();
+            }, 30);
+        }
+
+        function resetAllFilters() {
+            applyPreset('C1');
+            document.getElementById('slider-vignette').value = 20;
+            document.getElementById('toggle-datestamp').checked = true;
+            document.getElementById('toggle-dust').checked = false;
+            updateFilterParams();
+        }
+
+        /* COMPARE BEFORE / AFTER FEATURE */
+        function startCompare() {
+            isComparing = true;
+            renderPipeline();
+        }
+
+        function stopCompare() {
+            isComparing = false;
+            renderPipeline();
+        }
+
+        /* DOWNLOAD / SAVE PROCESSED IMAGE */
+        function downloadImage() {
+            if (!isImageLoaded) return;
+
+            // Generate high-quality JPEG export link
+            const dataURL = canvas.toDataURL('image/jpeg', 0.95);
+            const link = document.createElement('a');
+            const cleanPresetName = currentPreset.toLowerCase().replace(/[^a-z0-9]/gi, '_');
+            link.download = `vsco_2015_${cleanPresetName}_photo.jpg`;
+            link.href = dataURL;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function showLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            if (show) {
+                spinner.classList.remove('hidden');
+            } else {
+                spinner.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
