@@ -142,5 +142,14 @@
     "description": "Learn Armenian vocabulary in ten-word batches with multiple-choice tests, written recall and adaptive mistake reviews.",
     "status": "AVAILABLE",
     "path": "./vocabulary-trainer.html"
+  },
+  {
+    "id": "vsco-2015-studio",
+    "name": "VSCO ’15 Photo Studio",
+    "category": "visual",
+    "icon": "📷",
+    "description": "Recreate the nostalgic 2012–2016 photo look with vintage-inspired color grading and editing controls.",
+    "status": "AVAILABLE",
+    "path": "./2015%20Studio/vsco_2015_photo_studio.html"
   }
 ]
