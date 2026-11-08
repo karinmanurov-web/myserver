@@ -171,6 +171,60 @@ $("#clearNotes").addEventListener("click", () => {
   $("#notesStatus").textContent = "Notes cleared";
 });
 
+// Vocabulary reminder: read the trainer's local collection and draw five fresh words on each page load.
+const vocabularyStorageKey = "tcl_vocabulary_v1";
+const vocabularyRecentKey = "creativeLabVocabularyRecent";
+function getVocabularyWords() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(vocabularyStorageKey) || "{}");
+    const modules = Array.isArray(saved.modules) ? saved.modules : [];
+    const seen = new Set();
+    return modules.flatMap(module => (Array.isArray(module.words) ? module.words : []).map(word => ({
+      id: String(word.id || (String(module.id || module.name) + ":" + String(word.ru) + ":" + (word.hy || []).join("|"))),
+      ru: String(word.ru || "").trim(),
+      hy: Array.isArray(word.hy) ? word.hy.map(value => String(value).trim()).filter(Boolean) : [],
+      module: String(module.name || "Vocabulary")
+    }))).filter(word => {
+      if (!word.ru || !word.hy.length) return false;
+      const signature = word.ru.toLocaleLowerCase() + "::" + word.hy.join("|").toLocaleLowerCase();
+      if (seen.has(signature)) return false;
+      seen.add(signature);
+      return true;
+    });
+  } catch (error) {
+    return [];
+  }
+}
+function renderVocabularyReminder() {
+  const list = $("#vocabularyList");
+  if (!list) return;
+  const words = getVocabularyWords();
+  if (!words.length) {
+    list.innerHTML = '<p class="vocabulary-empty">Your Armenian word collection will appear here. Add a module in Vocabulary Room to begin.</p>';
+    return;
+  }
+  let recent = [];
+  try { recent = JSON.parse(sessionStorage.getItem(vocabularyRecentKey) || "[]"); } catch (error) {}
+  let pool = words.filter(word => !recent.includes(word.id));
+  if (pool.length < Math.min(5, words.length)) pool = words.slice();
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const selected = pool.slice(0, 5);
+  try { sessionStorage.setItem(vocabularyRecentKey, JSON.stringify(selected.map(word => word.id))); } catch (error) {}
+  list.innerHTML = selected.map(word =>
+    '<div class="vocabulary-word">' +
+      '<div class="vocabulary-armenian" lang="hy">' + escapeHtml(word.hy.join(" / ")) + '</div>' +
+      '<div class="vocabulary-translation">' + escapeHtml(word.ru) + '</div>' +
+      '<div class="vocabulary-source">' + escapeHtml(word.module) + '</div>' +
+    '</div>'
+  ).join("");
+}
+const refreshVocabularyButton = $("#refreshVocabulary");
+if (refreshVocabularyButton) refreshVocabularyButton.addEventListener("click", renderVocabularyReminder);
+renderVocabularyReminder();
+
 // Module registry: add future applications by editing data/modules.json.
 const categoryNames = {motion:"MOTION",visual:"VISUAL",director:"DIRECTOR'S",world:"WORLDS",workshop:"WORKSHOP"};
 async function loadModules() {
