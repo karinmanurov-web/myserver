@@ -79,7 +79,7 @@ function preset(name){
  }
  events=[];world.time=name==='city'?'night':'sunset';syncSettings();renderAll();
 }
-function syncSettings(){$('#worldTime').value=world.time;$('#worldWeather').value=world.weather;$('#scenePreset').value='blank';$('#worldTitle').textContent=world.title;$('#worldCaption').textContent=W+' × '+H+' TILES · '+world.time.toUpperCase()+' · '+world.weather.toUpperCase();$('#canvasWrap').classList.toggle('night',world.time==='night');}
+function syncSettings(){$('#worldTime').value=world.time;$('#worldWeather').value=world.weather;$('#worldTitle').textContent=world.title;$('#worldCaption').textContent=W+' × '+H+' TILES · '+world.time.toUpperCase()+' · '+world.weather.toUpperCase();$('#canvasWrap').classList.toggle('night',world.time==='night');}
 function tilePoint(x,y){return {cx:450+(x-y)*39,cy:72+(x+y)*19};}
 function poly(x,y){const p=tilePoint(x,y),a=39,b=19;return [[p.cx,p.cy],[p.cx+a,p.cy+b],[p.cx,p.cy+b*2],[p.cx-a,p.cy+b]].map(v=>v.join(',')).join(' ');}
 function groundColor(type){return type==='water'?'#8eabb0':type==='path'?'#c8b89f':'#a9b49a';}
