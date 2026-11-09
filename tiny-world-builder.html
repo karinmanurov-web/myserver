@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f4f0e8">
+<title>Tiny World Builder — The Creative Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f4f0e8;--cream:#fbf8f2;--ink:#302a25;--muted:#8d8174;--line:#ded6ca;--rust:#a65f48;--sage:#87917b;--serif:'Playfair Display',Georgia,serif;--sans:'DM Sans',Arial,sans-serif;--mono:'DM Mono',monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh}button,input,select,textarea{font:inherit}button{cursor:pointer}.wrap{max-width:1440px;margin:auto;padding:0 4.5%}.top{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.brand,.back{font:10px var(--mono);letter-spacing:.13em;color:var(--ink);text-decoration:none}.brand b{color:var(--rust);font-size:20px;margin-right:9px}.back{color:var(--rust)}.hero{padding:34px 0 22px;display:flex;justify-content:space-between;align-items:end;gap:24px}.eyebrow{font:9px var(--mono);letter-spacing:.15em;color:var(--rust);margin:0 0 10px}h1{font:500 clamp(38px,5vw,58px)/1.02 var(--serif);letter-spacing:-.045em;margin:0 0 10px}h1 em{color:var(--rust);font-weight:500}.sub{color:var(--muted);font-size:13px;line-height:1.7;max-width:590px;margin:0}.hero-meta{font:9px var(--mono);letter-spacing:.12em;color:var(--muted);white-space:nowrap;padding-bottom:6px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#eae3d8;border:1px solid var(--line);padding:10px 12px;margin:12px 0 14px}.toolbar label{font:8px var(--mono);letter-spacing:.1em;color:var(--muted);margin-right:2px}.toolbar select,.toolbar input{border:1px solid #d8cfc2;background:#fbf8f2;color:var(--ink);padding:8px 10px;font-size:11px;min-width:115px}.spacer{flex:1}.btn{border:1px solid var(--ink);background:var(--ink);color:#fff8ef;padding:9px 13px;font:8px var(--mono);letter-spacing:.1em}.btn.light{background:transparent;color:var(--ink);border-color:#d4cabc}.btn.rust{background:var(--rust);border-color:var(--rust)}.btn:disabled{opacity:.4;cursor:not-allowed}.workspace{display:grid;grid-template-columns:220px minmax(0,1fr) 245px;gap:13px;align-items:stretch}.panel{background:var(--cream);border:1px solid #e6ded2;min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;padding:14px 15px;border-bottom:1px solid #ebe4d9}.panel-title{font:9px var(--mono);letter-spacing:.13em;color:#817568}.panel-note{font:8px var(--mono);color:#a19689}.palette{padding:13px}.tool-group{margin-bottom:17px}.group-label{font:8px var(--mono);letter-spacing:.13em;color:#a09283;margin:0 0 8px}.tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.tool{border:1px solid #e7dfd3;background:#fffdf9;padding:9px 7px;text-align:left;color:var(--ink);min-height:62px;transition:.15s}.tool:hover{border-color:#c7aa91;transform:translateY(-1px)}.tool.active{border-color:var(--rust);background:#f5eae0;box-shadow:inset 0 0 0 1px #a65f4830}.tool .emoji{font-size:19px;display:block;margin-bottom:5px}.tool .tool-name{font-size:9px;color:#655b51}.tool .tool-type{font:7px var(--mono);letter-spacing:.08em;color:#a09283}.canvas-panel{display:flex;flex-direction:column;min-height:640px;overflow:hidden}.canvas-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;border-bottom:1px solid #ebe4d9}.world-title{font:500 21px var(--serif)}.world-caption{font:8px var(--mono);letter-spacing:.1em;color:#9a8d80;margin-top:3px}.canvas-actions{display:flex;gap:6px;flex-wrap:wrap}.canvas-wrap{position:relative;flex:1;min-height:460px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#e9e5d9;background-image:radial-gradient(#cfc8ba 0.7px,transparent .7px);background-size:15px 15px}.canvas-wrap.night{background-color:#303d4a;background-image:radial-gradient(#71808c 0.7px,transparent .7px)}svg#worldCanvas{width:100%;height:100%;max-height:610px;display:block;touch-action:manipulation}.tile{stroke:#ffffff65;stroke-width:1;cursor:pointer;transition:filter .12s}.tile:hover{filter:brightness(1.1)}.world-object{cursor:pointer}.world-object.selected .object-hit{stroke:var(--rust);stroke-width:2.5;fill:#fff8e8aa}.object-hit{fill:transparent;stroke:transparent}.object-emoji{font-size:27px;text-anchor:middle;dominant-baseline:middle;pointer-events:none}.object-label{font:8px var(--mono);fill:#554b40;text-anchor:middle;paint-order:stroke;stroke:#f7f0e5;stroke-width:3px;stroke-linejoin:round;pointer-events:none}.canvas-wrap.night .object-label{fill:#f8f0df;stroke:#34404b}.canvas-hint{position:absolute;left:14px;bottom:12px;background:#fbf8f2dd;border:1px solid #ded6ca;padding:8px 10px;font:8px var(--mono);letter-spacing:.08em;color:#807467;pointer-events:none}.canvas-wrap.night .canvas-hint{background:#27333ddd;color:#e8dfd0;border-color:#62707c}.inspector{padding:14px}.inspector-empty{padding:20px 8px;text-align:center;color:#a19588;font:10px/1.7 var(--mono)}.inspector-emoji{font-size:34px;margin:4px 0 10px}.field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.field label{font:8px var(--mono);letter-spacing:.1em;color:#958879}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#fffdf9;padding:9px 10px;color:var(--ink);font-size:11px;outline:none}.field textarea{min-height:60px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--rust)}.coords{display:grid;grid-template-columns:1fr 1fr;gap:8px}.inspector-actions{display:flex;gap:6px;margin-top:15px}.inspector-actions .btn{flex:1;padding:9px 7px}.rule{height:1px;background:#ebe4d9;margin:16px 0}.event-list{display:grid;gap:8px;padding:12px 15px}.event{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:start;font-size:10px;line-height:1.45;color:#71675c}.event b{display:block;font:8px var(--mono);letter-spacing:.08em;color:#a09283;margin-bottom:2px}.event-icon{width:25px;height:25px;border-radius:50%;background:#eee7dc;display:grid;place-items:center;font-size:12px}.bottom-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:13px;margin:13px 0 34px}.bottom-panel{background:var(--cream);border:1px solid #e6ded2}.bottom-content{padding:13px 15px}.event-controls{display:flex;gap:7px;flex-wrap:wrap}.status-line{font:8px var(--mono);color:#9b8f82;margin-top:10px;min-height:12px}.save-list{display:flex;gap:7px;flex-wrap:wrap}.save-chip{border:1px solid var(--line);background:#fffdf9;padding:8px 10px;font-size:10px;color:#655b51}.save-chip:hover{border-color:var(--rust)}.empty-saves{font-size:11px;color:#a09283}.modal-backdrop{position:fixed;inset:0;background:#29231dcc;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal-backdrop.open{display:flex}.modal{background:var(--cream);border:1px solid var(--line);width:min(620px,100%);max-height:88vh;overflow:auto;padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modal h2{font:500 25px var(--serif);margin:0}.modal textarea{width:100%;min-height:260px;background:#fffdf9;border:1px solid var(--line);padding:12px;font:10px/1.6 var(--mono);color:var(--ink);resize:vertical}.modal-actions{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:12px}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#302a25;color:#fff8ef;padding:11px 15px;font:9px var(--mono);letter-spacing:.08em;transition:.2s;z-index:30}.toast.show{opacity:1;transform:translate(-50%,0)}.footer{padding:4px 0 35px;color:#a09283;font:8px var(--mono);letter-spacing:.12em;text-align:center}
+@media(max-width:1050px){.workspace{grid-template-columns:190px minmax(0,1fr)}.inspector-panel{grid-column:1/-1}.inspector{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px}.inspector-empty{grid-column:1/-1}.inspector-actions{align-self:end}.bottom-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.wrap{padding:0 14px}.top{height:58px}.hero{padding:27px 0 17px;display:block}.hero-meta{margin-top:14px}.toolbar{gap:7px}.toolbar .spacer{display:none}.toolbar select{flex:1;min-width:100px}.toolbar .btn{flex:1}.workspace{grid-template-columns:1fr}.palette-panel{order:2}.canvas-panel{order:1;min-height:470px}.inspector-panel{order:3;grid-column:auto}.canvas-wrap{min-height:390px}.inspector{display:block}.tool-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.tool{min-height:58px;padding:7px 4px}.tool .tool-name{font-size:8px}.tool .emoji{font-size:17px}.bottom-grid{margin-bottom:24px}.canvas-top{align-items:flex-start}.world-title{font-size:18px}.canvas-actions .btn{padding:7px 8px;font-size:7px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><a class="brand" href="./"><b>✳</b> THE CREATIVE LAB</a><a class="back" href="./">← BACK TO LAB</a></header>
+<section class="hero"><div><p class="eyebrow">WORLD LAB / ENGINE Nº 009</p><h1>Tiny <em>World</em> Builder.</h1><p class="sub">Build a little place, give it a rhythm, and let the world come alive. A miniature scene editor for places with their own stories.</p></div><div class="hero-meta">IMAGINE · ARRANGE · SET IN MOTION</div></section>
+<div class="toolbar">
+<label for="scenePreset">START WITH</label><select id="scenePreset"><option value="station">Little station</option><option value="village">Quiet village</option><option value="island">Pocket island</option><option value="city">Evening town</option><option value="blank">Empty landscape</option></select>
+<label for="worldTime">TIME</label><select id="worldTime"><option value="morning">Morning</option><option value="day">Daylight</option><option value="sunset" selected>Golden hour</option><option value="night">Night</option></select>
+<label for="worldWeather">WEATHER</label><select id="worldWeather"><option value="clear">Clear</option><option value="cloudy">Cloudy</option><option value="rain">Rain</option><option value="snow">Snow</option></select>
+<span class="spacer"></span><button class="btn light" id="newWorld">NEW WORLD</button><button class="btn" id="saveWorld">SAVE WORLD</button>
+</div>
+<main class="workspace">
+<aside class="panel palette-panel"><div class="panel-head"><span class="panel-title">OBJECT LIBRARY</span><span class="panel-note">01 / TOOLS</span></div><div class="palette" id="palette"></div></aside>
+<section class="panel canvas-panel"><div class="canvas-top"><div><div class="world-title" id="worldTitle">The little station</div><div class="world-caption" id="worldCaption">10 × 8 TILES · GOLDEN HOUR</div></div><div class="canvas-actions"><button class="btn light" id="clearSelection">DESELECT</button><button class="btn light" id="exportJson">SCENARIO JSON ↗</button></div></div>
+<div class="canvas-wrap" id="canvasWrap"><svg id="worldCanvas" viewBox="0 0 900 560" role="img" aria-label="Interactive miniature isometric world"></svg><div class="canvas-hint">SELECT AN OBJECT · OR PICK A TOOL AND CLICK A TILE</div></div></section>
+<aside class="panel inspector-panel"><div class="panel-head"><span class="panel-title">OBJECT INSPECTOR</span><span class="panel-note" id="objectCount">07 OBJECTS</span></div><div class="inspector" id="inspector"><div class="inspector-empty">Select an object in your world to edit its details.</div></div></aside>
+</main>
+<section class="bottom-grid">
+<div class="bottom-panel"><div class="panel-head"><span class="panel-title">WORLD EVENTS</span><span class="panel-note">02 / LIVE STORY</span></div><div class="bottom-content"><div class="event-controls"><button class="btn light" data-event="train">🚆 TRAIN ARRIVES</button><button class="btn light" data-event="lamps">💡 LIGHTS ON</button><button class="btn light" data-event="rain">🌧 START RAIN</button><button class="btn light" data-event="walk">🚶 EVENING WALK</button><button class="btn rust" id="advanceTime">NEXT MOMENT ↗</button></div><div class="status-line" id="eventStatus">Your world is quiet. Give it something to happen.</div></div><div class="event-list" id="eventList"></div></div>
+<div class="bottom-panel"><div class="panel-head"><span class="panel-title">SAVED WORLDS</span><span class="panel-note">03 / YOUR COLLECTION</span></div><div class="bottom-content"><div class="save-list" id="saveList"></div><div class="status-line">Worlds are saved locally in this browser.</div></div></div>
+</section>
+<div class="footer">TINY WORLD BUILDER · A SMALL WORLD IS STILL A WHOLE WORLD</div>
+</div>
+<div class="modal-backdrop" id="jsonModal"><div class="modal"><div class="modal-head"><h2>Scenario JSON</h2><button class="btn light" id="closeJson">CLOSE ×</button></div><p class="sub" style="margin-bottom:12px">Export this world, or paste a compatible scenario. JSON contains data only — no executable code.</p><textarea id="jsonText" spellcheck="false"></textarea><div class="modal-actions"><button class="btn light" id="copyJson">COPY JSON</button><div style="display:flex;gap:7px"><button class="btn light" id="downloadJson">DOWNLOAD</button><button class="btn rust" id="importJson">VALIDATE & LOAD</button></div></div><div class="status-line" id="jsonStatus"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+'use strict';
+const KEY='tcl_tiny_worlds_v1';
+const W=10,H=8;
+const kinds={
+ path:{name:'Path tile',emoji:'🟫',group:'GROUND',behavior:'A quiet path through the world.',ground:true},
+ grass:{name:'Grass',emoji:'🌱',group:'GROUND',behavior:'A patch of soft green grass.',ground:true},
+ water:{name:'Water',emoji:'💧',group:'GROUND',behavior:'Still water with a gentle shimmer.',ground:true},
+ house:{name:'Little house',emoji:'🏡',group:'BUILDINGS',behavior:'A warm home with lights in the windows.'},
+ station:{name:'Station',emoji:'🚉',group:'BUILDINGS',behavior:'A small station where journeys begin.'},
+ shop:{name:'Corner shop',emoji:'🏪',group:'BUILDINGS',behavior:'A tiny shop with a welcoming door.'},
+ cafe:{name:'Cafe',emoji:'☕',group:'BUILDINGS',behavior:'A cozy place for a slow coffee.'},
+ tree:{name:'Tree',emoji:'🌳',group:'NATURE',behavior:'Leaves move softly in the breeze.'},
+ flower:{name:'Flowers',emoji:'🌷',group:'NATURE',behavior:'A little patch of colour.'},
+ lamp:{name:'Street lamp',emoji:'🏮',group:'DETAILS',behavior:'Turns on when evening falls.'},
+ bench:{name:'Bench',emoji:'🪑',group:'DETAILS',behavior:'A place to sit and watch the world.'},
+ car:{name:'Car',emoji:'🚗',group:'TRANSPORT',behavior:'A parked car, ready for a little trip.'},
+ train:{name:'Train',emoji:'🚆',group:'TRANSPORT',behavior:'Arrives at the station from time to time.'},
+ person:{name:'Resident',emoji:'🧍',group:'LIFE',behavior:'Wanders through the neighbourhood.'},
+ dog:{name:'Little dog',emoji:'🐕',group:'LIFE',behavior:'Looks for someone to play with.'},
+ boat:{name:'Boat',emoji:'⛵',group:'TRANSPORT',behavior:'Drifts slowly across the water.'}
+};
+const paletteGroups=['GROUND','BUILDINGS','NATURE','DETAILS','TRANSPORT','LIFE'];
+let world,selectedTool='house',selectedId=null,events=[],toastTimer;
+const $=s=>document.querySelector(s);
+const uid=()=>Math.random().toString(36).slice(2,9);
+function baseWorld(name){return {version:1,title:name||'A little world',width:W,height:H,time:'sunset',weather:'clear',objects:[],createdAt:new Date().toISOString()};}
+function add(type,x,y,extra){const o={id:uid(),type,x,y,name:kinds[type].name,behavior:kinds[type].behavior};if(extra)Object.assign(o,extra);world.objects.push(o);return o;}
+function preset(name){
+ world=baseWorld(({station:'The little station',village:'A quiet village',island:'Pocket island',city:'Town after sunset',blank:'An empty landscape'})[name]||'A little world');
+ if(name==='station'){
+  [[2,4],[3,4],[4,4],[5,4]].forEach(p=>add('path',p[0],p[1]));add('station',4,2);add('house',2,2);add('tree',1,5);add('tree',7,2);add('lamp',5,3);add('bench',3,5);add('person',6,5);add('dog',7,5);add('train',4,5);
+ }else if(name==='village'){
+  add('house',2,2);add('house',6,2);add('shop',4,4);add('cafe',7,5);[[2,4],[3,4],[4,4],[5,4],[6,4]].forEach(p=>add('path',p[0],p[1]));add('tree',1,1);add('tree',8,2);add('flower',3,6);add('lamp',5,3);add('person',6,6);add('dog',2,6);
+ }else if(name==='island'){
+  [[2,2],[3,2],[4,2],[5,2],[6,2],[2,3],[3,3],[4,3],[5,3],[6,3],[3,4],[4,4],[5,4]].forEach(p=>add('water',p[0],p[1]));add('tree',3,2);add('tree',5,3);add('house',4,3);add('boat',6,4);add('flower',4,4);
+ }else if(name==='city'){
+  add('shop',2,2);add('cafe',6,2);add('house',4,1);add('house',7,4);[[2,4],[3,4],[4,4],[5,4],[6,4],[7,4]].forEach(p=>add('path',p[0],p[1]));add('car',3,5);add('car',6,5);add('lamp',2,3);add('lamp',6,3);add('person',5,5);add('person',7,6);add('tree',1,6);
+ }
+ events=[];world.time=name==='city'?'night':'sunset';syncSettings();renderAll();
+}
+function syncSettings(){$('#worldTime').value=world.time;$('#worldWeather').value=world.weather;$('#scenePreset').value='blank';$('#worldTitle').textContent=world.title;$('#worldCaption').textContent=W+' × '+H+' TILES · '+world.time.toUpperCase()+' · '+world.weather.toUpperCase();$('#canvasWrap').classList.toggle('night',world.time==='night');}
+function tilePoint(x,y){return {cx:450+(x-y)*39,cy:72+(x+y)*19};}
+function poly(x,y){const p=tilePoint(x,y),a=39,b=19;return [[p.cx,p.cy],[p.cx+a,p.cy+b],[p.cx,p.cy+b*2],[p.cx-a,p.cy+b]].map(v=>v.join(',')).join(' ');}
+function groundColor(type){return type==='water'?'#8eabb0':type==='path'?'#c8b89f':'#a9b49a';}
+function renderCanvas(){
+ const svg=$('#worldCanvas');let s='';
+ for(let sum=0;sum<W+H-1;sum++)for(let x=0;x<W;x++){const y=sum-x;if(y<0||y>=H)continue;const ground=world.objects.find(o=>o.x===x&&o.y===y&&kinds[o.type].ground);const fill=ground?groundColor(ground.type):((x+y)%2?'#aeba9f':'#b8c2a8');s+='<polygon class="tile" data-x="'+x+'" data-y="'+y+'" points="'+poly(x,y)+'" fill="'+fill+'"/>';}
+ const ordered=world.objects.slice().sort((a,b)=>(a.x+a.y)-(b.x+b.y));
+ ordered.forEach(o=>{const p=tilePoint(o.x,o.y),isSel=o.id===selectedId;const emoji=kinds[o.type].emoji;const lift=kinds[o.type].ground?0:15;s+='<g class="world-object '+(isSel?'selected':'')+'" data-id="'+o.id+'"><ellipse class="object-hit" cx="'+p.cx+'" cy="'+(p.cy+7-lift)+'" rx="23" ry="17"/><text class="object-emoji" x="'+p.cx+'" y="'+(p.cy+1-lift)+'">'+emoji+'</text><text class="object-label" x="'+p.cx+'" y="'+(p.cy+25-lift)+'">'+escapeXml(o.name.slice(0,18))+'</text></g>';});
+ if(world.weather==='rain'||world.weather==='snow'){for(let i=0;i<34;i++){const x=(i*83+29)%880+10,y=(i*47+16)%480+20;s+='<text x="'+x+'" y="'+y+'" font-size="12" opacity=".55">'+(world.weather==='rain'?'╱':'❄')+'</text>';}}
+ if(world.time==='night'){s+='<rect x="0" y="0" width="900" height="560" fill="#233347" opacity=".18" pointer-events="none"/>';}
+ svg.innerHTML=s;
+}
+function escapeXml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));}
+function renderPalette(){
+ let html='';paletteGroups.forEach(group=>{html+='<div class="tool-group"><div class="group-label">'+group+'</div><div class="tool-grid">';Object.keys(kinds).filter(k=>kinds[k].group===group).forEach(k=>{html+='<button class="tool '+(selectedTool===k?'active':'')+'" data-tool="'+k+'" type="button"><span class="emoji">'+kinds[k].emoji+'</span><span class="tool-name">'+kinds[k].name+'</span></button>';});html+='</div></div>';});$('#palette').innerHTML=html;
+}
+function renderInspector(){
+ const box=$('#inspector'),o=world.objects.find(v=>v.id===selectedId);
+ $('#objectCount').textContent=String(world.objects.length).padStart(2,'0')+' OBJECTS';
+ if(!o){box.innerHTML='<div class="inspector-empty">Select an object in your world to edit its details. Choose a tool and click an empty tile to add something new.</div>';return;}
+ box.innerHTML='<div><div class="inspector-emoji">'+kinds[o.type].emoji+'</div><div class="panel-title">'+kinds[o.type].group+'</div></div><div class="field"><label>OBJECT NAME</label><input id="objName" maxlength="28" value="'+escapeXml(o.name)+'"></div><div class="field"><label>BEHAVIOUR / NOTE</label><textarea id="objBehavior">'+escapeXml(o.behavior)+'</textarea></div><div class="field"><label>POSITION</label><div class="coords"><div><label>X</label><input id="objX" type="number" min="0" max="'+(W-1)+'" value="'+o.x+'"></div><div><label>Y</label><input id="objY" type="number" min="0" max="'+(H-1)+'" value="'+o.y+'"></div></div></div><div class="field"><label>OBJECT TYPE</label><select id="objType">'+Object.keys(kinds).filter(k=>!kinds[k].ground||k===o.type).map(k=>'<option value="'+k+'" '+(o.type===k?'selected':'')+'>'+kinds[k].name+'</option>').join('')+'</select></div><div class="inspector-actions"><button class="btn light" id="duplicateObject">DUPLICATE</button><button class="btn rust" id="deleteObject">DELETE</button></div>';
+ $('#objName').addEventListener('input',e=>{o.name=e.target.value;renderCanvas();});
+ $('#objBehavior').addEventListener('change',e=>o.behavior=e.target.value);
+ ['objX','objY'].forEach(id=>$('#'+id).addEventListener('change',e=>{const v=Math.max(0,Math.min((id==='objX'?W:H)-1,Number(e.target.value)||0));o[id==='objX'?'x':'y']=v;e.target.value=v;renderCanvas();}));
+ $('#objType').addEventListener('change',e=>{o.type=e.target.value;renderInspector();renderCanvas();});
+ $('#deleteObject').addEventListener('click',()=>{world.objects=world.objects.filter(v=>v.id!==o.id);selectedId=null;renderAll();});
+ $('#duplicateObject').addEventListener('click',()=>{const copy=JSON.parse(JSON.stringify(o));copy.id=uid();copy.x=Math.min(W-1,copy.x+1);copy.y=Math.min(H-1,copy.y+1);copy.name=o.name+' copy';world.objects.push(copy);selectedId=copy.id;renderAll();});
+}
+function renderEvents(){const box=$('#eventList');box.innerHTML=events.length?events.slice(-4).reverse().map(e=>'<div class="event"><span class="event-icon">'+e.icon+'</span><div><b>'+e.time+'</b>'+escapeXml(e.text)+'</div></div>').join(''):'<div class="event"><span class="event-icon">◌</span><div><b>NO EVENTS YET</b>Try a story action to begin.</div></div>';}
+function renderSaves(){let saves=[];try{saves=JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){}$('#saveList').innerHTML=saves.length?saves.map(s=>'<button class="save-chip" data-load="'+s.id+'">↗ '+escapeXml(s.title)+'</button>').join(''):'<span class="empty-saves">Your saved worlds will appear here.</span>';}
+function renderAll(){syncSettings();renderPalette();renderCanvas();renderInspector();renderEvents();renderSaves();}
+function notify(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200);}
+function addEvent(icon,text){events.push({id:uid(),icon,text,time:world.time.toUpperCase()});renderEvents();$('#eventStatus').textContent=text;renderCanvas();}
+function saveWorld(){
+ let saves=[];try{saves=JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){}
+ const id=world.saveId||uid();world.saveId=id;const copy=JSON.parse(JSON.stringify(world));copy.savedAt=new Date().toISOString();const i=saves.findIndex(s=>s.id===id);if(i>=0)saves[i]=copy;else saves.unshift(copy);saves=saves.slice(0,12);localStorage.setItem(KEY,JSON.stringify(saves));renderSaves();notify('WORLD SAVED IN YOUR BROWSER');
+}
+function loadWorld(id){let saves=[];try{saves=JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){}const found=saves.find(s=>s.id===id);if(!found)return;world=JSON.parse(JSON.stringify(found));selectedId=null;events=[];renderAll();notify('WORLD LOADED');}
+function scenario(){return {engine:'tiny-world-builder',version:1,title:world.title,width:W,height:H,settings:{time:world.time,weather:world.weather},objects:world.objects.map(o=>({id:o.id,type:o.type,x:o.x,y:o.y,name:o.name,behavior:o.behavior})),events:events};}
+function validateScenario(data){
+ if(!data||data.engine!=='tiny-world-builder'||data.version!==1||!Array.isArray(data.objects))throw new Error('This is not a Tiny World Builder v1 scenario.');
+ if(data.objects.length>120)throw new Error('A world can contain up to 120 objects.');
+ const clean=data.objects.map(o=>{if(!kinds[o.type]||!Number.isInteger(o.x)||!Number.isInteger(o.y)||o.x<0||o.x>=W||o.y<0||o.y>=H)throw new Error('An object has an invalid type or position.');return {id:String(o.id||uid()),type:o.type,x:o.x,y:o.y,name:String(o.name||kinds[o.type].name).slice(0,28),behavior:String(o.behavior||'').slice(0,240)};});
+ return {version:1,title:String(data.title||'Imported little world').slice(0,50),width:W,height:H,time:['morning','day','sunset','night'].includes(data.settings?.time)?data.settings.time:'day',weather:['clear','cloudy','rain','snow'].includes(data.settings?.weather)?data.settings.weather:'clear',objects:clean,createdAt:new Date().toISOString()};
+}
+function openJson(){ $('#jsonText').value=JSON.stringify(scenario(),null,2);$('#jsonStatus').textContent='';$('#jsonModal').classList.add('open');}
+$('#palette').addEventListener('click',e=>{const b=e.target.closest('[data-tool]');if(!b)return;selectedTool=b.dataset.tool;selectedId=null;renderPalette();renderInspector();});
+$('#worldCanvas').addEventListener('click',e=>{
+ const obj=e.target.closest('[data-id]');
+ if(obj){selectedId=obj.dataset.id;selectedTool=null;renderPalette();renderCanvas();renderInspector();return;}
+ const tile=e.target.closest('[data-x]');
+ if(!tile)return;
+ const x=Number(tile.dataset.x),y=Number(tile.dataset.y);
+ if(!selectedTool){notify('PICK AN OBJECT TOOL FIRST');return;}
+ const existing=world.objects.find(o=>o.x===x&&o.y===y&&kinds[o.type].ground&&kinds[selectedTool].ground);
+ if(existing){existing.type=selectedTool;existing.name=kinds[selectedTool].name;existing.behavior=kinds[selectedTool].behavior;selectedId=existing.id;}
+ else{const obj=add(selectedTool,x,y);selectedId=obj.id;}
+ renderAll();
+});
+$('#clearSelection').addEventListener('click',()=>{selectedId=null;renderInspector();renderCanvas();});
+$('#worldTime').addEventListener('change',e=>{world.time=e.target.value;syncSettings();renderCanvas();});
+$('#worldWeather').addEventListener('change',e=>{world.weather=e.target.value;syncSettings();renderCanvas();});
+$('#scenePreset').addEventListener('change',e=>preset(e.target.value));
+$('#newWorld').addEventListener('click',()=>{if(!confirm('Start a new world? Unsaved changes will be lost.'))return;preset($('#scenePreset').value||'blank');});
+$('#saveWorld').addEventListener('click',saveWorld);
+$('#saveList').addEventListener('click',e=>{const b=e.target.closest('[data-load]');if(b)loadWorld(b.dataset.load);});
+$('#exportJson').addEventListener('click',openJson);
+$('#closeJson').addEventListener('click',()=>$('#jsonModal').classList.remove('open'));
+$('#jsonModal').addEventListener('click',e=>{if(e.target.id==='jsonModal')$('#jsonModal').classList.remove('open');});
+$('#copyJson').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#jsonText').value);$('#jsonStatus').textContent='Copied to clipboard.';}catch(e){$('#jsonStatus').textContent='Select the text and copy it manually.';}});
+$('#downloadJson').addEventListener('click',()=>{const blob=new Blob([$('#jsonText').value],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='tiny-world-scenario.json';a.click();URL.revokeObjectURL(url);$('#jsonStatus').textContent='Scenario downloaded.';});
+$('#importJson').addEventListener('click',()=>{try{const next=validateScenario(JSON.parse($('#jsonText').value));world=next;selectedId=null;events=[];renderAll();$('#jsonStatus').textContent='Scenario is valid and loaded.';notify('SCENARIO LOADED');}catch(e){$('#jsonStatus').textContent=e.message||'Invalid JSON.';}});
+document.querySelectorAll('[data-event]').forEach(b=>b.addEventListener('click',()=>{
+ const type=b.dataset.event;
+ if(type==='train'){if(!world.objects.some(o=>o.type==='train'))add('train',4,5);addEvent('🚆','A train arrives. The little platform wakes up.');}
+ if(type==='lamps'){world.objects.filter(o=>o.type==='lamp').forEach(o=>o.behavior='The lamp glows warmly after dusk.');world.time='night';syncSettings();addEvent('💡','Street lamps flicker on, one by one.');}
+ if(type==='rain'){world.weather='rain';syncSettings();addEvent('🌧','Rain begins to fall over the rooftops.');}
+ if(type==='walk'){if(!world.objects.some(o=>o.type==='person'))add('person',5,5);if(!world.objects.some(o=>o.type==='dog'))add('dog',6,5);addEvent('🚶','A resident takes the dog for an evening walk.');}
+ renderAll();
+}));
+$('#advanceTime').addEventListener('click',()=>{const seq=['morning','day','sunset','night'];world.time=seq[(seq.indexOf(world.time)+1)%seq.length];syncSettings();addEvent('◷','Time moves forward. It is now '+world.time+'.');renderAll();});
+preset('station');
+})();
+</script>
+</body></html>
