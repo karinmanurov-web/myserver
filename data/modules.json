@@ -76,9 +76,9 @@
     "name": "Tiny World Builder",
     "category": "world",
     "icon": "▦",
-    "description": "Build small living places with objects, weather, time cycles and scripted events.",
-    "status": "IDEA",
-    "path": null
+    "description": "Build miniature places with objects, inhabitants, weather, day-night cycles and little story events.",
+    "status": "AVAILABLE",
+    "path": "./tiny-world-builder.html"
   },
   {
     "id": "vector-studio",
