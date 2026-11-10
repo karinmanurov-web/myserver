@@ -4,10 +4,12 @@
 <style>
 :root{--paper:#f4f0e8;--cream:#fbf8f2;--ink:#302a25;--muted:#8d8174;--line:#ded6ca;--rust:#a65f48;--sage:#87917b;--serif:"Playfair Display",Georgia,serif;--sans:"DM Sans",Arial,sans-serif;--mono:"DM Mono",monospace}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans)}button,input,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1120px;margin:auto;padding:88px 26px 55px}.back{position:fixed;top:16px;left:16px;z-index:5;padding:11px 15px;border:1px solid #786e5f55;background:#faf7f0ed;color:var(--ink);text-decoration:none;font:11px var(--mono);letter-spacing:.08em}.eyebrow,.mono{font:10px var(--mono);letter-spacing:.13em;color:var(--muted)}.hero{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px;gap:20px}.hero h1{font:500 clamp(40px,6vw,66px)/1 var(--serif);letter-spacing:-.05em;margin:10px 0}.hero h1 em{color:var(--rust)}.hero p{max-width:500px;color:#786e63;font-size:13px;line-height:1.75;margin:0}.hero-mark{font:58px var(--serif);color:#b18a70}.layout{display:grid;grid-template-columns:270px 1fr;gap:15px;align-items:start}.panel,.main-panel{background:var(--cream);border:1px solid #e6ded2;padding:20px}.panel{position:sticky;top:15px}.panel h2,.main-panel h2{font:500 23px var(--serif);margin:0 0 15px}.btn{border:1px solid var(--ink);background:var(--ink);color:#faf6ed;padding:11px 14px;font:10px var(--mono);letter-spacing:.1em}.btn.secondary{background:transparent;color:var(--ink);border-color:var(--line)}.btn.soft{background:#eee5d9;color:var(--ink);border-color:#eee5d9}.btn:disabled{opacity:.4;cursor:not-allowed}.wide{width:100%}.field{display:grid;gap:7px;margin:12px 0}.field label{font:9px var(--mono);letter-spacing:.1em;color:var(--muted)}input,textarea{width:100%;border:1px solid var(--line);background:#fffdf8;color:var(--ink);padding:11px 12px;outline:none;font-size:13px}textarea{min-height:150px;resize:vertical;line-height:1.55;font:11px var(--mono)}input:focus,textarea:focus{border-color:#a78c75}.hint{font-size:10px;line-height:1.6;color:var(--muted)}.module-list{display:grid;gap:7px;margin-top:15px}.module-item{width:100%;text-align:left;border:1px solid var(--line);background:transparent;padding:11px;display:flex;justify-content:space-between;gap:8px;color:var(--ink)}.module-item.active{border-color:var(--rust);background:#f3eae0}.module-item strong{font:500 13px var(--serif)}.module-item small{display:block;font:9px var(--mono);color:var(--muted);margin-top:4px}.empty{padding:25px 10px;text-align:center;color:var(--muted);font:11px var(--mono);line-height:1.8}.main-panel{min-height:520px}.topline,.module-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.topline{margin-bottom:18px}.topline .eyebrow{margin:0}.stage{display:inline-flex;padding:6px 9px;background:#eee5d9;color:#75614f;font:9px var(--mono);letter-spacing:.1em}.question-count{font:10px var(--mono);color:var(--muted)}.progress-track{height:4px;background:#e9e1d6;margin:12px 0 20px}.progress-track span{display:block;height:100%;background:var(--sage);width:0;transition:width .25s}.study-card{background:#f3eee5;border:1px solid #e8dfd2;padding:clamp(22px,5vw,42px);text-align:center;min-height:270px;display:flex;flex-direction:column;justify-content:center;align-items:center}.prompt-label{font:9px var(--mono);letter-spacing:.14em;color:var(--muted);margin-bottom:15px}.prompt-word{font:500 clamp(30px,5vw,48px)/1.2 var(--serif);overflow-wrap:anywhere}.prompt-sub{font-size:11px;color:var(--muted);margin-top:12px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px;width:100%}.answer{border:1px solid var(--line);background:#fffdf8;padding:15px 12px;text-align:center;color:var(--ink);font-size:16px;min-height:60px}.answer:hover:not(:disabled){border-color:#aa8068}.answer.correct{border-color:#7c9276;background:#e8eee4}.answer.wrong{border-color:#b66b55;background:#f4e5df}.answer:disabled{cursor:default}.typing-row{display:flex;gap:8px;width:min(100%,520px);margin-top:22px}.typing-row input{font-size:18px;text-align:center}.feedback{min-height:28px;margin:12px 0 0;text-align:center;font-size:12px;color:var(--muted)}.feedback.good{color:#607b5c}.feedback.bad{color:#a65f48}.study-actions{display:flex;justify-content:center;gap:8px;margin-top:15px;flex-wrap:wrap}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0}.stat{padding:13px;background:#f3eee5}.stat strong{display:block;font:500 25px var(--serif)}.stat span{font:8px var(--mono);letter-spacing:.1em;color:var(--muted)}.hidden{display:none!important}.notice{background:#f0e9dc;padding:12px 14px;font-size:11px;line-height:1.6;color:#756b5f;margin:12px 0}.module-head h2{margin:0 0 5px}.module-tools{display:flex;gap:7px;flex-wrap:wrap}.word-list{display:grid;gap:5px;margin-top:12px}.word-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;border-bottom:1px solid #eee7dd;padding:8px 2px;font-size:12px}.word-row small{color:var(--muted);font-size:10px}.muted-link{border:0;background:none;color:var(--rust);font:9px var(--mono);letter-spacing:.08em;padding:5px}.danger{color:#a65f48}.done-mark{font:52px var(--serif);color:var(--sage)}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:#fff;padding:11px 16px;font-size:11px;transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:760px){.shell{padding:80px 16px 35px}.layout{grid-template-columns:1fr}.panel{position:static}.hero-mark{display:none}.main-panel{min-height:440px}.word-row{grid-template-columns:1fr 1fr auto}}@media(max-width:420px){.answers{grid-template-columns:1fr}.hero h1{font-size:43px}.panel,.main-panel{padding:15px}}
-</style></head><body>
+.cloud-box{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}.cloud-box h3{font:500 18px var(--serif);margin:0 0 9px}.cloud-status{font-size:10px;line-height:1.6;color:var(--muted);margin:8px 0}.cloud-actions{display:grid;gap:7px}.cloud-actions input{font-size:11px}.cloud-library{display:grid;gap:6px;margin-top:9px}.cloud-library button{border:1px solid var(--line);background:#fffdf8;text-align:left;padding:9px;color:var(--ink)}.cloud-library small{display:block;color:var(--muted);font:9px var(--mono);margin-top:3px}.cloud-tag{font:8px var(--mono);color:var(--sage);letter-spacing:.08em}</style></head><body>
 <a class="back" href="./">← BACK TO LAB</a><div class="shell">
 <header class="hero"><div><div class="eyebrow">THE CREATIVE LAB · LANGUAGE WORKSHOP</div><h1>Vocabulary <em>room.</em></h1><p>Ten words at a time. First recognize, then recall. Words that need a little more love will find their way back into the next round.</p></div><div class="hero-mark">Աբ</div></header>
-<div class="layout"><aside class="panel"><h2>Your modules</h2><button class="btn wide" id="addModule">＋ ADD MODULE</button><div id="moduleList" class="module-list"></div><div class="notice">Modules and progress are saved in this browser. They are not synchronized between devices.</div></aside>
+<div class="layout"><aside class="panel"><h2>Your modules</h2><button class="btn wide" id="addModule">＋ ADD MODULE</button><div id="moduleList" class="module-list"></div><div class="notice">Local modules stay in this browser until you choose to upload them. Cloud progress is private to your account.</div>
+<div class="cloud-box"><h3>Cloud account</h3><div id="cloudStatus" class="cloud-status">Connecting to Vocabulary Room…</div><div id="cloudSignedOut" class="cloud-actions"><input id="cloudEmail" type="email" autocomplete="email" placeholder="Your email address"><button class="btn secondary wide" id="cloudSignIn">SEND SIGN-IN LINK</button></div><div id="cloudSignedIn" class="cloud-actions hidden"><div class="hint" id="cloudEmailLabel"></div><button class="btn secondary wide" id="cloudSignOut">SIGN OUT</button><button class="btn soft wide" id="cloudMigrate">UPLOAD MY LOCAL MODULES</button></div></div>
+<div class="cloud-box"><h3>Shared library</h3><div class="hint">Published collections and your own drafts.</div><div id="cloudLibrary" class="cloud-library"><div class="empty">Loading library…</div></div></div></aside>
 <main class="main-panel">
 <section id="welcome"><div class="eyebrow">A SMALL, STEADY PRACTICE</div><h2>Let's learn something.</h2><p class="hint">Paste a list generated by GPT. The trainer splits it into groups of ten and guides you through multiple-choice and written recall.</p><div class="summary"><div class="stat"><strong id="totalModules">0</strong><span>MODULES</span></div><div class="stat"><strong id="totalWords">0</strong><span>WORDS</span></div><div class="stat"><strong id="totalMastered">0</strong><span>MASTERED</span></div></div><div class="notice"><b>Import format</b><br>One pair per line: Հայերեն; русский or русский; Հայերեն. Commas and tabs also work. Alternative translations: белый|светлый.</div></section>
 <section id="import" class="hidden"><div class="topline"><p class="eyebrow">NEW WORD COLLECTION</p><button class="muted-link" id="cancelImport">CANCEL ×</button></div><h2>Add a module</h2><div class="field"><label for="moduleName">MODULE NAME</label><input id="moduleName" maxlength="70" placeholder="Armenian · Colours"></div><div class="field"><label for="wordInput">PASTE YOUR WORDS</label><textarea id="wordInput" spellcheck="false" placeholder="սպիտակ; белый&#10;բեժ; бежевый&#10;բորդո; бордовый"></textarea></div><p class="hint">Accepted separators: semicolon, comma or Tab. Armenian and Russian columns are detected automatically. Alternative translations: word1|word2. Header rows are optional.</p><div id="importPreview" class="hint"></div><div class="study-actions"><button class="btn secondary" id="previewImport">CHECK LIST</button><button class="btn" id="saveModule">SAVE MODULE</button></div></section>
@@ -15,9 +17,10 @@
 <section id="study" class="hidden"><div class="topline"><span class="stage" id="stageLabel">TEST · BATCH 1</span><span class="question-count" id="questionCount">1 / 10</span></div><div class="progress-track"><span id="studyProgress"></span></div><div class="study-card"><div class="prompt-label" id="promptLabel">CHOOSE THE ARMENIAN TRANSLATION</div><div class="prompt-word" id="promptWord">слово</div><div class="prompt-sub" id="promptSub"></div><div id="answers" class="answers"></div><div id="typingRow" class="typing-row hidden"><input id="typedAnswer" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type in Armenian…"><button class="btn" id="checkTyped">CHECK</button></div><div class="feedback" id="feedback" aria-live="polite"></div></div><div class="study-actions"><button class="btn secondary" id="exitStudy">PAUSE & EXIT</button><button class="btn hidden" id="nextQuestion">CONTINUE ↗</button></div></section>
 <section id="complete" class="hidden"><div class="done-mark">✳</div><div class="eyebrow">SESSION COMPLETE</div><h2 id="completeTitle">Lovely work.</h2><p class="hint" id="completeText"></p><div class="summary"><div class="stat"><strong id="sessionCorrect">0</strong><span>CORRECT</span></div><div class="stat"><strong id="sessionWrong">0</strong><span>MISTAKES</span></div><div class="stat"><strong id="sessionMastered">0</strong><span>MASTERED</span></div></div><div class="study-actions"><button class="btn" id="backToModule">BACK TO MODULE</button></div></section>
 </main></div></div><div class="toast" id="toast" role="status"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const KEY="tcl_vocabulary_v1",el=id=>document.getElementById(id);let data=read(),active=null,session=null;
-function read(){try{return JSON.parse(localStorage.getItem(KEY))||{modules:[]}}catch(e){return{modules:[]}}}function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function read(){try{return JSON.parse(localStorage.getItem(KEY))||{modules:[]}}catch(e){return{modules:[]}}}function save(){localStorage.setItem(KEY,JSON.stringify(data));if(typeof cloudScheduleSave==="function")cloudScheduleSave()}
 function id(){return "w"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function toast(s){el("toast").textContent=s;el("toast").classList.add("show");setTimeout(()=>el("toast").classList.remove("show"),2200)}
 function view(name){["welcome","import","module","study","complete"].forEach(x=>el(x).classList.toggle("hidden",x!==name))}
@@ -48,5 +51,116 @@ el("checkTyped").onclick=checkTyped;el("typedAnswer").onkeydown=e=>{if(e.key==="
 function finishPhase(){let p=ensureProgress(mod());syncQueues(p);save();if(session.phase==="test"){phase("write");return}if(session.base.length)p.batch++;let processed=mod().words.slice(0,Math.min(p.batch*10,mod().words.length));let pending=new Set([...p.reviewQueueTest,...p.reviewQueueWrite]);processed.filter(w=>!pending.has(w.id)).forEach(w=>{if(!p.mastered.includes(w.id))p.mastered.push(w.id);delete p.mistakes[w.id]});p.mastered=p.mastered.filter(id=>mod().words.some(w=>w.id===id));syncQueues(p);save();let hasNext=p.batch<Math.ceil(mod().words.length/10),hasReviews=p.reviewQueueTest.length>0||p.reviewQueueWrite.length>0;if(hasNext||hasReviews){session={review:false,phase:"test",batch:p.batch,base:hasNext?mod().words.slice(p.batch*10,p.batch*10+10):[],items:[],i:0,missed:[],correct:0,wrong:0,answered:false};phase("test");return}complete()}
 function complete(){delete data.activeSession;let p=ensureProgress(mod());el("completeTitle").textContent="You've reached the end!";el("completeText").textContent="All words are now correct in both stages. No pending mistakes remain — beautiful work.";el("sessionCorrect").textContent=session.correct;el("sessionWrong").textContent=session.wrong;el("sessionMastered").textContent=p.mastered.length;save();renderList();renderModule();view("complete")}
 el("resumeStudy").onclick=()=>{const saved=data.activeSession;if(!saved||saved.moduleId!==active||!mod())return;const s=saved.session;const valid=s&&["test","write"].includes(s.phase)&&Array.isArray(s.base)&&Array.isArray(s.items)&&s.items.length>0&&s.items.every(x=>x&&x.word&&typeof x.word.ru==="string"&&Array.isArray(x.word.hy)&&x.word.hy.length>0)&&Number.isInteger(s.i)&&s.i>=0&&s.i<=s.items.length;if(!valid){delete data.activeSession;session=null;save();renderModule();view("module");toast("Saved session is damaged. Your progress is safe; start this round again.");return}session=s;if(session.advanceOnResume){session.i++;session.advanceOnResume=false}session.answered=false;if(session.i>session.items.length)session.i=session.items.length;view("study");question()};el("startStudy").onclick=()=>start(false);el("reviewMistakes").onclick=()=>start(true);el("exitStudy").onclick=()=>{if(!confirm("Pause and return to the module?"))return;session.advanceOnResume=!!session.answered;let p=ensureProgress(mod());syncQueues(p);persistSession();renderModule();renderList();view("module")};el("backToModule").onclick=()=>{renderModule();view("module")};
+
+/* Supabase cloud layer: public library + private per-user learning state. */
+const cloudConfig=window.VOCABULARY_SUPABASE_CONFIG;
+let cloudClient=null,cloudUser=null,cloudSaveTimer=null,cloudLoading=false;
+function cloudStatus(message){const node=el("cloudStatus");if(node)node.textContent=message}
+function cloudInit(){
+  if(!cloudConfig||!cloudConfig.url||!cloudConfig.publishableKey||!window.supabase){cloudStatus("Cloud setup is incomplete. Local learning remains available.");return}
+  cloudClient=window.supabase.createClient(cloudConfig.url,cloudConfig.publishableKey);
+  el("cloudSignIn").onclick=async()=>{
+    const email=el("cloudEmail").value.trim();
+    if(!email){cloudStatus("Enter your email address first.");return}
+    el("cloudSignIn").disabled=true;cloudStatus("Sending a secure sign-in link…");
+    const {error}=await cloudClient.auth.signInWithOtp({email,options:{emailRedirectTo:location.href}});
+    el("cloudSignIn").disabled=false;
+    cloudStatus(error?"Could not send the link: "+error.message:"Check your inbox. Open the sign-in link on this device to continue.");
+  };
+  el("cloudSignOut").onclick=async()=>{const {error}=await cloudClient.auth.signOut();if(error)cloudStatus("Sign-out error: "+error.message)};
+  el("cloudMigrate").onclick=migrateLocalModules;
+  cloudClient.auth.onAuthStateChange(async(_event,sessionAuth)=>{
+    cloudUser=sessionAuth?.user||null;
+    el("cloudSignedOut").classList.toggle("hidden",!!cloudUser);
+    el("cloudSignedIn").classList.toggle("hidden",!cloudUser);
+    el("cloudEmailLabel").textContent=cloudUser?"SIGNED IN · "+cloudUser.email:"";
+    if(cloudUser){
+      cloudStatus("Signed in. Loading your library and private progress…");
+      await loadCloudLibrary();
+      if(active)await loadCloudState(active);
+      cloudStatus("Cloud connected · "+cloudUser.email);
+    }else{
+      cloudStatus("Not signed in. Public library is available; progress stays on this device.");
+      await loadCloudLibrary();
+    }
+  });
+}
+async function loadCloudLibrary(){
+  if(!cloudClient)return;
+  const {data:rows,error}=await cloudClient.from("vocabulary_modules").select("id,slug,title,description,language_code,owner_id,visibility").order("title");
+  if(error){cloudStatus("Library could not load: "+error.message);return}
+  data.modules=data.modules.filter(m=>!m.cloud);
+  for(const row of (rows||[])){
+    const {data:words,error:wordError}=await cloudClient.from("vocabulary_words").select("id,position,prompt_ru,answers").eq("module_id",row.id).order("position");
+    if(wordError){console.warn("Vocabulary words load failed",wordError);continue}
+    const cloudModule={id:"cloud_"+row.id,cloudId:row.id,cloud:true,ownerId:row.owner_id,visibility:row.visibility,name:row.title,description:row.description,words:(words||[]).map(w=>({id:w.id,ru:w.prompt_ru,hy:w.answers})),progress:{mastered:[],mistakes:{},reviewQueue:[],reviewQueueTest:[],reviewQueueWrite:[],batch:0}};
+    data.modules.push(cloudModule);
+  }
+  renderList();renderCloudLibrary();
+  if(active&&!mod()){active=null;view("welcome")}
+}
+function renderCloudLibrary(){
+  const host=el("cloudLibrary");if(!host)return;
+  const list=data.modules.filter(m=>m.cloud);
+  host.innerHTML=list.length?list.map(m=>'<button data-cloud-id="'+esc(m.id)+'"><strong>'+esc(m.name)+'</strong><small>'+m.words.length+' WORDS · '+(m.visibility==="public"?"PUBLIC": "YOUR "+String(m.visibility).toUpperCase())+'</small></button>').join(""):'<div class="empty">No published modules yet.</div>';
+  host.querySelectorAll("[data-cloud-id]").forEach(b=>b.onclick=()=>select(b.dataset.cloudId));
+}
+async function loadCloudState(moduleKey){
+  const m=data.modules.find(x=>x.id===moduleKey&&x.cloud);
+  if(!m||!cloudClient||!cloudUser)return;
+  const {data:row,error}=await cloudClient.from("vocabulary_sessions").select("session_state").eq("user_id",cloudUser.id).eq("module_id",m.cloudId).maybeSingle();
+  if(error){console.warn("Cloud session load failed",error);return}
+  if(row?.session_state){
+    const state=row.session_state;
+    if(state.progress&&typeof state.progress==="object"){
+      m.progress={...m.progress,...state.progress};
+      ensureProgress(m);
+    }
+    if(state.activeSession&&state.activeSession.moduleId===m.id&&state.activeSession.session){
+      const s=state.activeSession.session;
+      const valid=s&&["test","write"].includes(s.phase)&&Array.isArray(s.base)&&Array.isArray(s.items)&&s.items.length>0&&s.items.every(x=>x?.word&&typeof x.word.ru==="string"&&Array.isArray(x.word.hy)&&x.word.hy.length)&&Number.isInteger(s.i)&&s.i>=0&&s.i<=s.items.length;
+      if(valid)data.activeSession=state.activeSession;
+    }
+    localStorage.setItem(KEY,JSON.stringify(data));
+    if(active===m.id)renderModule();
+  }
+}
+function cloudScheduleSave(){
+  if(!cloudClient||!cloudUser||cloudLoading)return;
+  const m=mod();if(!m?.cloud)return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer=setTimeout(()=>cloudPersist(m).catch(e=>{console.error(e);cloudStatus("Cloud save failed. Your local progress is still saved.")}),650);
+}
+async function cloudPersist(m){
+  if(!cloudClient||!cloudUser||!m?.cloud)return;
+  const p=ensureProgress(m);
+  const state={progress:{mastered:p.mastered,mistakes:p.mistakes,reviewQueue:p.reviewQueue,reviewQueueTest:p.reviewQueueTest,reviewQueueWrite:p.reviewQueueWrite,batch:p.batch},activeSession:data.activeSession?.moduleId===m.id?data.activeSession:null};
+  const {error}=await cloudClient.from("vocabulary_sessions").upsert({user_id:cloudUser.id,module_id:m.cloudId,session_state:state,updated_at:new Date().toISOString()},{onConflict:"user_id,module_id"});
+  if(error){cloudStatus("Cloud save failed: "+error.message);throw error}
+  cloudStatus("Saved securely to your account.");
+}
+async function migrateLocalModules(){
+  if(!cloudClient||!cloudUser){cloudStatus("Sign in before uploading local modules.");return}
+  const local=data.modules.filter(m=>!m.cloud);
+  if(!local.length){cloudStatus("There are no local modules to upload.");return}
+  if(!confirm("Upload "+local.length+" local module(s) as private review drafts? Your original browser data will remain untouched."))return;
+  el("cloudMigrate").disabled=true;
+  let uploaded=0;
+  try{
+    for(const m of local){
+      const slug=(String(m.name||"vocabulary").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,38)||"vocabulary")+"-"+Math.random().toString(36).slice(2,8);
+      const {data:created,error}=await cloudClient.from("vocabulary_modules").insert({slug,title:m.name||"Untitled module",description:"Imported from this browser",language_code:"hy",owner_id:cloudUser.id,visibility:"pending"}).select("id").single();
+      if(error)throw error;
+      const wordRows=(m.words||[]).map((w,i)=>({module_id:created.id,position:i+1,prompt_ru:w.ru,answers:w.hy}));
+      if(wordRows.length){const {error:wordsError}=await cloudClient.from("vocabulary_words").insert(wordRows);if(wordsError)throw wordsError}
+      uploaded++;
+    }
+    await loadCloudLibrary();
+    cloudStatus("Uploaded "+uploaded+" draft module(s). They are private to you until published.");
+  }catch(e){cloudStatus("Upload stopped after "+uploaded+" module(s): "+e.message+". Local copies are safe.");await loadCloudLibrary()}
+  finally{el("cloudMigrate").disabled=false}
+}
+
+cloudInit();
 renderList();view("welcome");
 </script></body></html>
