@@ -114,6 +114,10 @@ function renderCloudLibrary(){
 async function loadCloudState(moduleKey){
   const m=data.modules.find(x=>x.id===moduleKey&&x.cloud);
   if(!m||!cloudClient||!cloudUser)return;
+  // Finish any local queued cloud checkpoints before reading. Otherwise a fast
+  // re-entry can fetch the previous phase boundary and overwrite the newer session.
+  await cloudWriteChain;
+  if(!cloudUser||active!==moduleKey)return;
   const {data:row,error}=await cloudClient.from("vocabulary_sessions").select("session_state").eq("user_id",cloudUser.id).eq("module_id",m.cloudId).maybeSingle();
   if(error){console.warn("Cloud session load failed",error);return}
   if(row?.session_state){
