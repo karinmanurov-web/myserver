@@ -70,21 +70,25 @@ function cloudInit(){
   };
   el("cloudSignOut").onclick=async()=>{const {error}=await cloudClient.auth.signOut();if(error)cloudStatus("Sign-out error: "+error.message)};
   el("cloudMigrate").onclick=migrateLocalModules;
-  cloudClient.auth.onAuthStateChange(async(_event,sessionAuth)=>{
-    cloudUser=sessionAuth?.user||null;
-    el("cloudSignedOut").classList.toggle("hidden",!!cloudUser);
-    el("cloudSignedIn").classList.toggle("hidden",!cloudUser);
-    el("cloudEmailLabel").textContent=cloudUser?"SIGNED IN · "+cloudUser.email:"";
-    if(cloudUser){
-      cloudStatus("Signed in. Loading your library and private progress…");
-      await loadCloudLibrary();
-      if(active)await loadCloudState(active);
-      cloudStatus("Cloud connected · "+cloudUser.email);
-    }else{
-      cloudStatus("Not signed in. Public library is available; progress stays on this device.");
-      await loadCloudLibrary();
-    }
+  cloudClient.auth.onAuthStateChange((_event,sessionAuth)=>{
+    // Defer database work outside the auth callback to avoid blocking auth state transitions.
+    setTimeout(()=>handleCloudAuth(sessionAuth),0);
   });
+}
+async function handleCloudAuth(sessionAuth){
+  cloudUser=sessionAuth?.user||null;
+  el("cloudSignedOut").classList.toggle("hidden",!!cloudUser);
+  el("cloudSignedIn").classList.toggle("hidden",!cloudUser);
+  el("cloudEmailLabel").textContent=cloudUser?"SIGNED IN · "+cloudUser.email:"";
+  if(cloudUser){
+    cloudStatus("Signed in. Loading your library and private progress…");
+    await loadCloudLibrary();
+    if(active)await loadCloudState(active);
+    cloudStatus("Cloud connected · "+cloudUser.email);
+  }else{
+    cloudStatus("Not signed in. Public library is available; progress stays on this device.");
+    await loadCloudLibrary();
+  }
 }
 async function loadCloudLibrary(){
   if(!cloudClient)return;
