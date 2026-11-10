@@ -18,6 +18,7 @@
 <section id="complete" class="hidden"><div class="done-mark">✳</div><div class="eyebrow">SESSION COMPLETE</div><h2 id="completeTitle">Lovely work.</h2><p class="hint" id="completeText"></p><div class="summary"><div class="stat"><strong id="sessionCorrect">0</strong><span>CORRECT</span></div><div class="stat"><strong id="sessionWrong">0</strong><span>MISTAKES</span></div><div class="stat"><strong id="sessionMastered">0</strong><span>MASTERED</span></div></div><div class="study-actions"><button class="btn" id="backToModule">BACK TO MODULE</button></div></section>
 </main></div></div><div class="toast" id="toast" role="status"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./vocabulary-data/supabase-config.js"></script>
 <script>
 const KEY="tcl_vocabulary_v1",el=id=>document.getElementById(id);let data=read(),active=null,session=null;
 function read(){try{return JSON.parse(localStorage.getItem(KEY))||{modules:[]}}catch(e){return{modules:[]}}}function save(){localStorage.setItem(KEY,JSON.stringify(data));if(typeof cloudScheduleSave==="function")cloudScheduleSave()}
@@ -26,7 +27,7 @@ function toast(s){el("toast").textContent=s;el("toast").classList.add("show");se
 function view(name){["welcome","import","module","study","complete"].forEach(x=>el(x).classList.toggle("hidden",x!==name))}
 function mod(){return data.modules.find(x=>x.id===active)}
 function renderList(){el("moduleList").innerHTML=data.modules.length?data.modules.map(m=>'<button class="module-item '+(m.id===active?"active":"")+'" data-id="'+m.id+'"><span><strong>'+esc(m.name)+'</strong><small>'+m.words.length+' WORDS · '+(m.progress.mastered.length)+' MASTERED</small></span><span>↗</span></button>').join(""):'<div class="empty">No modules yet.<br>Add your first word list.</div>';el("moduleList").querySelectorAll("[data-id]").forEach(b=>b.addEventListener("click",()=>select(b.dataset.id)));el("totalModules").textContent=data.modules.length;el("totalWords").textContent=data.modules.reduce((n,m)=>n+m.words.length,0);el("totalMastered").textContent=data.modules.reduce((n,m)=>n+m.progress.mastered.length,0)}
-function select(x){active=x;renderList();renderModule();view("module")}
+function select(x){active=x;renderList();renderModule();view("module");if(typeof loadCloudState==="function"&&mod()?.cloud)loadCloudState(x)}
 function ensureProgress(m){const p=m.progress||(m.progress={mastered:[],mistakes:{},reviewQueue:[],batch:0});p.mastered=p.mastered||[];p.mistakes=p.mistakes||{};p.batch=p.batch||0;if(!Array.isArray(p.reviewQueueTest)||!Array.isArray(p.reviewQueueWrite)){const legacy=Array.isArray(p.reviewQueue)?p.reviewQueue:[];p.reviewQueueTest=[...legacy];p.reviewQueueWrite=[...legacy]}p.reviewQueue=[...new Set([...(p.reviewQueueTest||[]),...(p.reviewQueueWrite||[])])];return p}
 function renderModule(){const m=mod();if(!m)return;const p=ensureProgress(m);el("moduleNameTitle").textContent=m.name;el("moduleMeta").textContent=m.words.length+" WORDS · "+Math.ceil(m.words.length/10)+" BATCHES";el("progressPct").textContent=Math.round(p.mastered.length/m.words.length*100)+"%";el("masteredCount").textContent=p.mastered.length;el("mistakeCount").textContent=p.reviewQueue.length;el("moduleStatus").textContent=p.reviewQueue.length?p.reviewQueue.length+" word(s) still need correction. Test errors return to the test; typing errors return to written recall.":"Next: batch "+Math.min(p.batch+1,Math.ceil(m.words.length/10))+". No pending mistakes.";el("startStudy").textContent=p.batch>=Math.ceil(m.words.length/10)?"RESTART MODULE ↗":"START LEARNING ↗";el("resumeStudy").classList.toggle("hidden",!(data.activeSession&&data.activeSession.moduleId===active));el("reviewMistakes").disabled=!p.reviewQueue.length;el("wordList").innerHTML=m.words.map(w=>'<div class="word-row"><span>'+esc(w.ru)+'</span><span>'+esc(w.hy.join(" / "))+'</span><small>'+(p.reviewQueue.includes(w.id)?(p.mistakes[w.id]+" ERR."):p.mastered.includes(w.id)?"✓ MASTERED":"—")+'</small></div>').join("")}
 function hasHy(s){return /[Ա-Ֆա-ֆև]/u.test(s)}
@@ -152,7 +153,26 @@ async function migrateLocalModules(){
       const {data:created,error}=await cloudClient.from("vocabulary_modules").insert({slug,title:m.name||"Untitled module",description:"Imported from this browser",language_code:"hy",owner_id:cloudUser.id,visibility:"pending"}).select("id").single();
       if(error)throw error;
       const wordRows=(m.words||[]).map((w,i)=>({module_id:created.id,position:i+1,prompt_ru:w.ru,answers:w.hy}));
-      if(wordRows.length){const {error:wordsError}=await cloudClient.from("vocabulary_words").insert(wordRows);if(wordsError)throw wordsError}
+      let idMap={};
+      if(wordRows.length){
+        const {data:newWords,error:wordsError}=await cloudClient.from("vocabulary_words").insert(wordRows).select("id,position");
+        if(wordsError)throw wordsError;
+        (newWords||[]).forEach(w=>{const oldWord=(m.words||[])[w.position-1];if(oldWord)idMap[oldWord.id]=w.id});
+      }
+      const old=m.progress||{}, remap=list=>(Array.isArray(list)?list:[]).map(x=>idMap[x]).filter(Boolean), mistakes={};
+      Object.entries(old.mistakes||{}).forEach(([k,v])=>{if(idMap[k])mistakes[idMap[k]]=v});
+      const progress={mastered:remap(old.mastered),mistakes,reviewQueue:remap(old.reviewQueue),reviewQueueTest:remap(old.reviewQueueTest||old.reviewQueue),reviewQueueWrite:remap(old.reviewQueueWrite||old.reviewQueue),batch:Number(old.batch)||0};
+      let activeSession=null;
+      if(data.activeSession?.moduleId===m.id&&data.activeSession.session){
+        activeSession=JSON.parse(JSON.stringify(data.activeSession));
+        activeSession.moduleId="cloud_"+created.id;
+        const s=activeSession.session;
+        ["base"].forEach(k=>{if(Array.isArray(s[k]))s[k].forEach(w=>{if(idMap[w.id])w.id=idMap[w.id]})});
+        if(Array.isArray(s.items))s.items.forEach(item=>{if(item?.word?.id&&idMap[item.word.id])item.word.id=idMap[item.word.id]});
+        if(Array.isArray(s.missed))s.missed=remap(s.missed);
+      }
+      const {error:stateError}=await cloudClient.from("vocabulary_sessions").upsert({user_id:cloudUser.id,module_id:created.id,session_state:{progress,activeSession},updated_at:new Date().toISOString()},{onConflict:"user_id,module_id"});
+      if(stateError)throw stateError;
       uploaded++;
     }
     await loadCloudLibrary();
